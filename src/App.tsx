@@ -1,7 +1,7 @@
-import CardCategoria from "./components/categoria/cardcategoria/CardCategoria";
+import ListaCategorias from "./components/categoria/listacategorias/ListaCategorias";
 
 function App() {
-  return <CardCategoria />;
+  return <ListaCategorias />;
 }
 
 export default App;

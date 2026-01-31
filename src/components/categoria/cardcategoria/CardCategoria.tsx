@@ -1,21 +1,20 @@
 function CardCategoria() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
+    <div className="flex items-center justify-center bg-gray-100 p-1">
    <div
   className="
     w-full max-w-3xl
-    rounded-2xl shadow-xl p-8
+    rounded-2xl shadow-xl p-4
     bg-linear-to-r from-yellow-200 via-pink-200 to-pink-300
     
     transition-all duration-300
     hover:scale-105 hover:shadow-2xl
 
     animate-fadeIn
-  "
->
+  ">
 
 
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
           Detalhes do Veículo
         </h2>
 
