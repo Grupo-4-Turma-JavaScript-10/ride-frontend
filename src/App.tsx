@@ -1,7 +1,11 @@
 import FormCategoria from "./components/categoria/formcategoria/FormCategoria";
 
 function App() {
-  return <FormCategoria />;
-}
+  return (
+    <>  
+      <FormCategoria />;
+    </>
+  );
+};
 
 export default App;
