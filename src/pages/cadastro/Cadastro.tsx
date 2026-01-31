@@ -2,7 +2,6 @@ import { useState } from "react";
 
 export default function Cadastro() {
 
-  // 👉 lógica mínima só pra visual
   const [tipo, setTipo] = useState("PASSAGEIRO");
 
   return (
@@ -33,7 +32,6 @@ export default function Cadastro() {
 
         <form className="flex flex-col gap-4">
 
-          {/* 👇 SÓ AQUI mudou */}
           <div className="flex gap-2 bg-stone-100/80 p-1 rounded-xl backdrop-blur-sm">
             <button
               type="button"
