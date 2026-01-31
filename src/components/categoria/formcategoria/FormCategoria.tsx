@@ -3,6 +3,7 @@ import { atualizar, cadastrar } from "../../../services/Service";
 import { ToastAlerta } from "../../../util/ToastAlerta";
 import { useNavigate, useParams } from "react-router-dom";
 import type Categoria from "../../../models/Categoria";
+import { ClipLoader } from "react-spinners";
 
 function FormCategoria() {
 
@@ -207,8 +208,7 @@ function FormCategoria() {
 
                         <button
                             type="submit"
-                            disabled={isLoading}
-                            className="
+                                         className="
               px-8 py-3
               rounded-full
               bg-pink-400
@@ -217,9 +217,15 @@ function FormCategoria() {
               shadow-lg
               hover:bg-pink-500
               transition-all duration-300
-              transform hover:scale-105
-            "
-                        >
+              transform hover:scale-105">
+                            {isLoading ?
+                                <ClipLoader
+                                color='#ffffff'
+                                size={24}
+                                /> : 
+                                <span>{id === undefined ? 'cadastrar': 'atualizar'}</span>
+                            }
+
                             {isLoading ? "Salvando..." : "Salvar"}
                         </button>
                     </div>
