@@ -12,6 +12,9 @@
   .bg-gradient-custom {
     background: linear-gradient(90deg, var(--color-custom-yellow), var(--color-custom-pink));
   }
+  .bg-gradient-pink {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-custom-pink));
+  }
 }
 
 @keyframes fadeIn {
