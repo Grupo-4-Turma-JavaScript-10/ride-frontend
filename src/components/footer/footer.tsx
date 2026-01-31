@@ -3,7 +3,7 @@ import Vertex from "../../assets/vertex.png"
 
 function footer() {
   return (
-    <footer className="p-5 bg-gradient-pink w-full flex mt-auto h-fit font-roboto flex-col items-center sm:items-start sm:flex-row ">
+    <footer className="mt-auto p-5 bg-gradient-pink w-full flex mt-auto h-fit font-roboto flex-col items-center sm:items-start sm:flex-row ">
       <img src={Logo} alt="Velo" className="w-60"/>
       <div className="sm:mt-15 flex flex-col items-center sm:block">
         <h1 className="font-extrabold text-4xl mb-2">VELO</h1>
