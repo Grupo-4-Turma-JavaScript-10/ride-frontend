@@ -8,5 +8,6 @@ export default interface Usuario{
     foto: string;
     sexo: string;
     data: string;
+    tipoUsuario: string;
     produto?: Produto[];
 }
