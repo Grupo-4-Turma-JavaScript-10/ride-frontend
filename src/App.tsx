@@ -1,10 +1,7 @@
-import './App.css'
+import CardCategoria from "./components/categoria/cardcategoria/CardCategoria";
 
 function App() {
-  return (
-    <>
-    </>
-  )
+  return <CardCategoria />;
 }
 
-export default App
+export default App;
