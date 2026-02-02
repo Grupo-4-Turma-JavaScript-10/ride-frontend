@@ -10,7 +10,7 @@ export default interface Produto {
     destino: string;
     distanciaKm: number;
     tempoMinutos: number;
-    velocidade: number;
+    velocidadeMediaKmh: number;
     ativo: boolean;
     data: string;
     motoristaMesmoGenero: boolean;

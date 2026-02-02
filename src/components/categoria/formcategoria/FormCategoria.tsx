@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { atualizar, cadastrar } from "../../../services/Service";
+import { atualizar, buscar, cadastrar } from "../../../services/Service";
 import { ToastAlerta } from "../../../util/ToastAlerta";
 import { useNavigate, useParams } from "react-router-dom";
 import type Categoria from "../../../models/Categoria";
 import { ClipLoader } from "react-spinners";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 function FormCategoria() {
 
