@@ -2,11 +2,11 @@ export default function Login() {
   return (
     <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-white">
 
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-white to-rose-50" />
+      <div className="absolute inset-0 bg-linear-to-br from-yellow-50 via-white to-rose-50" />
 
 
-      <div className="absolute w-[600px] h-[600px] bg-yellow-200/20 rounded-full blur-3xl -top-40 -left-40" />
-      <div className="absolute w-[600px] h-[600px] bg-pink-200/20 rounded-full blur-3xl -bottom-40 -right-40" />
+      <div className="absolute w-150 h-150 bg-yellow-200/20 rounded-full blur-3xl -top-40 -left-40" />
+      <div className="absolute w-150 h-150 bg-pink-200/20 rounded-full blur-3xl -bottom-40 -right-40" />
 
 
       <div
@@ -67,7 +67,7 @@ export default function Login() {
             className="
               mt-2 py-3 rounded-lg
               font-medium text-gray-900
-              bg-gradient-to-r from-yellow-200 via-pink-200 to-rose-200
+              bg-linear-to-r from-yellow-200 via-pink-200 to-rose-200
               shadow-md
               transition-all duration-300
               hover:from-amber-300 hover:via-orange-200 hover:to-rose-300
