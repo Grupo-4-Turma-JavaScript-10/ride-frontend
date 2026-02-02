@@ -5,12 +5,12 @@ export default interface Produto {
     id: number;
     titulo: string;
     descricao: string;
-    praco: number;
+    preco: number;
     origem: string;
     destino: string;
     distanciaKm: number;
     tempoMinutos: number;
-    velocidade: number;
+    velocidadeMediaKmh: number;
     ativo: boolean;
     data: string;
     motoristaMesmoGenero: boolean;
