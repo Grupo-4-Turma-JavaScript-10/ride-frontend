@@ -1,22 +1,80 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
+/* =========================
+   Base
+========================= */
+@layer base {
+  :root {
+    --color-custom-yellow: #fff7ad;
+    --color-custom-pink: #ffa9f9;
+    --font-roboto: "Roboto", sans-serif;
+  }
 
-@theme {
-  --color-custom-yellow: #FFF7AD;
-  --color-custom-pink: #FFA9F9;
-  --font-roboto: 'Roboto', sans-serif;
+  body {
+    font-family: var(--font-roboto);
+  }
 }
 
+/* =========================
+   Utilities
+========================= */
 @layer utilities {
   .bg-gradient-custom {
-    background: linear-gradient(90deg, var(--color-custom-yellow), var(--color-custom-pink));
+    background: linear-gradient(
+      90deg,
+      var(--color-custom-yellow),
+      var(--color-custom-pink)
+    );
   }
+
   .bg-gradient-pink {
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--color-custom-pink));
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0),
+      var(--color-custom-pink)
+    );
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .animate-fadeInUp {
+    animation: fadeInUp 0.5s ease forwards;
+  }
+
+  .animate-bounceIn {
+    animation: bounceIn 0.6s ease forwards;
+  }
+
+  .animate-successFade {
+    animation: successFade 0.5s ease forwards;
+  }
+
+  .animate-fadeInOverlay {
+    animation: fadeInOverlay 0.4s ease forwards;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glowPulse 2.5s ease-in-out infinite;
+  }
+
+  .animate-shake {
+    animation: shake 0.3s ease-in-out;
+  }
+
+  .animate-pop {
+    animation: pop 0.3s ease forwards;
   }
 }
 
+/* =========================
+   Keyframes
+========================= */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -28,40 +86,99 @@
   }
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.6s ease-out;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes successFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 80px rgba(0, 0, 0, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+  }
 }
 
 @keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-2px); }
-  50% { transform: translateX(2px); }
-  75% { transform: translateX(-2px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
-.animate-shake {
-  animation: shake 0.3s ease-in-out;
-}
 @keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.12); }
-  100% { transform: scale(1.05); }
-}
-
-.animate-pop {
-  animation: pop 0.3s ease forwards;
-}
-
-@layer components {
-  .input-pastel {
-    @apply w-full px-4 py-3
-    rounded-xl
-    bg-white
-    text-gray-800
-    border border-gray-300
-    focus:outline-none
-    focus:ring-2
-    focus:ring-pink-400;
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1.05);
   }
 }
