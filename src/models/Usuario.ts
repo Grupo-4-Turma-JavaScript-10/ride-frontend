@@ -1,6 +1,8 @@
 import type Produto from "./Produto";
 
-export default interface Usuario{
+export type TipoUsuario = 'CLIENTE' | 'MOTORISTA';
+
+export default interface Usuario {
     id: number;
     nome: string;
     usuario: string;
@@ -8,6 +10,6 @@ export default interface Usuario{
     foto: string;
     sexo: string;
     data: string;
-    tipoUsuario: string;
+    tipoUsuario: TipoUsuario;
     produto?: Produto[];
 }
