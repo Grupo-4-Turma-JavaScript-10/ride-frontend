@@ -1,38 +1,37 @@
-import { createContext, useState, type ReactNode } from "react"
-import { ToastAlerta } from "../util/ToastAlerta"
-import { login } from "../services/Service"
-import { useNavigate } from "react-router-dom"
+import { createContext, useState, type ReactNode, useEffect } from "react";
+import { ToastAlerta } from "../util/ToastAlerta";
+import { login } from "../services/Service";
+import { useNavigate } from "react-router-dom";
 
 export interface UsuarioLogin {
-    id: number
-    nome: string
-    usuario: string
-    tipoUsuario: "motorista" | "passageiro" | ""
-    senha: string
-    foto: string
-    token: string
+    id: number;
+    nome: string;
+    usuario: string;
+    tipoUsuario: "MOTORISTA" | "PASSAGEIRO" | "";
+    senha: string;
+    foto: string;
+    token: string;
 }
 
 interface AuthContextProps {
-    usuario: UsuarioLogin
-    handleLogout(): void
-    handleLogin(usuario: UsuarioLogin): Promise<void>
-    isLoading: boolean
-    isMotorista: boolean
-    isPassageiro: boolean
-    isAuthenticated: boolean
+    usuario: UsuarioLogin;
+    handleLogout(): void;
+    handleLogin(usuario: UsuarioLogin): Promise<void>;
+    isLoading: boolean;
+    isMotorista: boolean;
+    isPassageiro: boolean;
+    isAuthenticated: boolean;
 }
 
 interface AuthProvidersProps {
-    children: ReactNode
+    children: ReactNode;
 }
 
-export const AuthContext = createContext({} as AuthContextProps)
+export const AuthContext = createContext({} as AuthContextProps);
 
 export function AuthProvider({ children }: AuthProvidersProps) {
-
-    const navigate = useNavigate()
-
+    const navigate = useNavigate();
+    
     const [usuario, setUsuario] = useState<UsuarioLogin>({
         id: 0,
         nome: "",
@@ -41,39 +40,71 @@ export function AuthProvider({ children }: AuthProvidersProps) {
         senha: "",
         foto: "",
         token: ""
-    })
+    });
+    
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const isMotorista = usuario.tipoUsuario === "MOTORISTA";
+    const isPassageiro = usuario.tipoUsuario === "PASSAGEIRO";
+    const isAuthenticated = usuario.token !== "";
 
-    const [isLoading, setIsLoading] = useState(false)
-
-    const isMotorista = usuario.tipoUsuario === "motorista"
-    const isPassageiro = usuario.tipoUsuario === "passageiro"
-    const isAuthenticated = usuario.token !== ""
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const usuarioSalvo = localStorage.getItem('usuario');
+        
+        if (token && usuarioSalvo) {
+            try {
+                const usuarioData = JSON.parse(usuarioSalvo);
+                setUsuario({
+                    ...usuarioData,
+                    token: token,
+                    senha: ""
+                });
+            } catch (error) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+            }
+        }
+    }, []);
 
     async function handleLogin(usuarioLogin: UsuarioLogin) {
-
         if (!usuarioLogin.tipoUsuario) {
-            ToastAlerta('Selecione se você é motorista ou passageiro!', 'error')
-            return
+            ToastAlerta('Selecione se você é motorista ou passageiro!', 'error');
+            return;
         }
-
-        setIsLoading(true)
-
+        
+        setIsLoading(true);
+        
         try {
-            await login(`/usuarios/logar`, usuarioLogin, setUsuario)
-
-            ToastAlerta('Login realizado com sucesso!', 'success')
-
-            if (usuarioLogin.tipoUsuario === "motorista") {
-                navigate("/dashboard-motorista")
-            } else {
-                navigate("/dashboard-passageiro")
-            }
-
-        } catch (error) {
-            ToastAlerta('Os dados do usuário estão inconsistentes!', 'error')
+            await login(`/usuarios/logar`, usuarioLogin, (usuarioRetornado: UsuarioLogin) => {
+                setUsuario(usuarioRetornado);
+                
+                localStorage.setItem('token', usuarioRetornado.token);
+                localStorage.setItem('usuario', JSON.stringify({
+                    id: usuarioRetornado.id,
+                    nome: usuarioRetornado.nome,
+                    usuario: usuarioRetornado.usuario,
+                    tipoUsuario: usuarioRetornado.tipoUsuario,
+                    foto: usuarioRetornado.foto
+                }));
+            });
+            
+            ToastAlerta('Login realizado com sucesso!', 'success');
+            
+            setTimeout(() => {
+                if (usuarioLogin.tipoUsuario === "MOTORISTA") {
+                    navigate("/perfil");
+                } else {
+                    navigate("/perfil");
+                }
+            }, 100);
+            
+        } catch (error: any) {
+            ToastAlerta('Os dados do usuário estão inconsistentes!', 'error');
+            throw error;
+        } finally {
+            setIsLoading(false);
         }
-
-        setIsLoading(false)
     }
 
     function handleLogout() {
@@ -85,9 +116,12 @@ export function AuthProvider({ children }: AuthProvidersProps) {
             senha: "",
             foto: "",
             token: ""
-        })
-
-        navigate("/login")
+        });
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        
+        navigate("/login");
     }
 
     return (
@@ -104,5 +138,5 @@ export function AuthProvider({ children }: AuthProvidersProps) {
         >
             {children}
         </AuthContext.Provider>
-    )
+    );
 }

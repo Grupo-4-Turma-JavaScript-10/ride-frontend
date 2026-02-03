@@ -1,6 +1,6 @@
 import type Produto from "./Produto";
 
-export type TipoUsuario = 'CLIENTE' | 'MOTORISTA';
+export type TipoUsuario = 'PASSAGEIRO' | 'MOTORISTA';
 
 export default interface Usuario {
     id: number;

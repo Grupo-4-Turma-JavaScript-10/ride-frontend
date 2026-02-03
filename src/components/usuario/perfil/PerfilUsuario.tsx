@@ -230,7 +230,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                         <p className="text-sm text-gray-600">Tipo de Usuário</p>
                         <p className="text-lg font-semibold text-gray-800">
-                            {formData.tipoUsuario === 'CLIENTE' ? 'Cliente' : 'Motorista'}
+                            {formData.tipoUsuario === 'PASSAGEIRO' ? 'PASSAGEIRO' : 'MOTORISTA'}
                         </p>
                     </div>
                 </div>

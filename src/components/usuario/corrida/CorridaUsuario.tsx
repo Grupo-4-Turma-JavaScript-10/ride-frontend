@@ -3,7 +3,7 @@ import type Produto from '../../../models/Produto';
 
 interface CorridasUsuarioProps {
   produtos: Produto[];
-  tipoUsuario: 'CLIENTE' | 'MOTORISTA';
+  tipoUsuario: 'PASSAGEIRO' | 'MOTORISTA';
 }
 
 function CorridasUsuario({ produtos, tipoUsuario }: CorridasUsuarioProps) {
@@ -121,7 +121,7 @@ function CorridasUsuario({ produtos, tipoUsuario }: CorridasUsuarioProps) {
                     <div>
                       <p className="text-xs text-gray-500">Velocidade</p>
                       <p className="text-sm font-semibold text-gray-800">
-                        {produto.velocidade} km/h
+                        {produto.velocidadeMediaKmh} km/h
                       </p>
                     </div>
                   </div>
