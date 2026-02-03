@@ -10,6 +10,19 @@ interface PerfilUsuarioProps {
     onUpdate: (usuarioAtualizado: Usuario) => void;
 }
 
+
+const GENEROS = [
+    "Feminino",
+    "Masculino",
+    "Não binário",
+    "Outro",
+    "Gênero fluido",
+    "Agênero",
+    "Bigênero",
+    "Transgênero",
+    "Intergênero"
+];
+
 function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -86,7 +99,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
 
         setLoading(true);
         try {
-    
+
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             const usuarioAtualizado: Usuario = {
@@ -283,13 +296,9 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                                     : 'bg-gray-100 cursor-not-allowed'
                                     }`}
                             >
-                                <option value="">Selecione</option>
-                                <option value="Masculino">Masculino</option>
-                                <option value="Feminino">Feminino</option>
-                                <option value="Outro">Outro</option>
-                                <option value="Prefiro não informar">
-                                    Prefiro não informar
-                                </option>
+                                {GENEROS.map((genero) => (
+                                    <option key={genero} value={genero}>{genero}</option>
+                                ))}
                             </select>
                         </div>
 

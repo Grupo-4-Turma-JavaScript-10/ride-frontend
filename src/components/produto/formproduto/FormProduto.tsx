@@ -97,7 +97,7 @@ function FormProduto() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-3xl rounded-[28px] p-8 shadow-xl bg-gradient-to-r from-yellow-200 via-pink-200 to-pink-400">
+      <div className="w-full max-w-3xl rounded-[28px] p-8 shadow-xl bg-linear-to-r from-yellow-200 via-pink-200 to-pink-400">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           {id ? "Editar Carona" : "Cadastrar Nova Carona"}
         </h1>

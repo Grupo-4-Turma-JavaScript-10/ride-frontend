@@ -43,7 +43,7 @@ function ListaProdutos() {
           to="/cadastrarproduto"
           className="
             px-6 py-2 rounded-full
-            bg-gradient-to-r from-yellow-200 via-pink-200 to-pink-400
+            bg-linear-to-br from-yellow-200 via-pink-200 to-pink-400
             text-gray-800 font-semibold
             shadow-lg hover:scale-105 transition transform
           "

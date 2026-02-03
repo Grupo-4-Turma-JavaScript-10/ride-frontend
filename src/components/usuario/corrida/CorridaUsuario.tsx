@@ -6,7 +6,7 @@ import type Produto from "../../../models/Produto";
 import { AuthContext } from "../../../contexts/AuthContext";
 
 interface CorridasUsuarioProps {
-  produtos: Produto[];
+  produtos?: Produto[];
   tipoUsuario: "PASSAGEIRO" | "MOTORISTA";
 }
 
@@ -163,7 +163,7 @@ function CorridasUsuario({ produtos, tipoUsuario }: CorridasUsuarioProps) {
                   </div>
 
                   <div className="flex md:flex-col items-center md:items-end gap-2">
-                    <div className="bg-gradient-to-br from-green-500 to-green-600 text-white px-6 py-4 rounded-lg text-center shadow-lg">
+                    <div className="bg-linear-to-br from-green-500 to-green-600 text-white px-6 py-4 rounded-lg text-center shadow-lg">
                       <p className="text-xs font-medium opacity-90 mb-1">PREÇO</p>
                       <p className="text-3xl font-bold">R$ {produto.preco.toFixed(2)}</p>
                     </div>

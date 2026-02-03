@@ -13,35 +13,38 @@ import FormCategoria from "./components/categoria/formcategoria/FormCategoria";
 import DeletarCategoria from "./components/categoria/cardcategoria/CardCategoria";
 import DashboardMotorista from "./pages/home/homemotorista/DashboardMotorista";
 import DashboardPassageiro from "./pages/home/homepassageiro/DashboardPassageiro";
+import DeletarCategoria from "./components/categoria/deletarcategoria/DeletarCategoria";
+
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <ToastContainer />
-        <Navbar />
+    <>
+      <BrowserRouter>
+        <AuthProvider>
+          <ToastContainer />
+          <Navbar />
 
-        <main className="min-h-screen flex flex-col">
-          <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/home' element={<Home />} />
-            <Route path='/login' element={<Login />} />
-            <Route path='/cadastro' element={<Cadastro />} />
-            <Route path="/perfil" element={<PerfilPage />} />
-            <Route path="/sobre" element={<Sobre />} />
-            <Route path="/categorias" element={<ListaCategorias />} />
-            <Route path="/cadastrarcategoria" element={<FormCategoria />} />
-            <Route path="/editarcategoria/:id" element={<FormCategoria />} />
-            <Route path="/deletarcategoria/:id" element={<DeletarCategoria />} />
-            <Route path="/dashboard-motorista" element={<DashboardMotorista />} />
-            <Route path="/dashboard-passageiro" element={<DashboardPassageiro />} />
-          </Routes>
-        </main>
+          <main className="min-h-screen flex flex-col">
+            <Routes>
+              <Route path='/' element={<Home />} />
+              <Route path='/home' element={<Home />} />
+              <Route path='/login' element={<Login />} />
+              <Route path='/cadastro' element={<Cadastro />} />
+              <Route path="/perfil" element={<PerfilPage />} />
+              <Route path="/sobre" element={<Sobre />} />
+              <Route path="/categorias" element={<ListaCategorias />} />
+              <Route path="/cadastrarcategoria" element={<FormCategoria/>} />
+              <Route path="/editarcategoria/:id" element={<FormCategoria/>} />
+              <Route path="/deletarcategoria/:id" element={<DeletarCategoria/>} />
+              <Route path="/dashboard-motorista" element={<DashboardMotorista />} />
+              <Route path="/dashboard-passageiro" element={<DashboardPassageiro />} />
+            </Routes>
+          </main>
 
-        <Footer />
-      </AuthProvider>
-    </BrowserRouter>
+          <Footer />
+        </AuthProvider>
+      </BrowserRouter>
+    </>
   );
 }
-
 export default App;

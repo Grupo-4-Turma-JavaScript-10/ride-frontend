@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import type Categoria from "../../../models/Categoria";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Pencil, Trash2 } from "lucide-react";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { ToastAlerta } from "../../../util/ToastAlerta";
@@ -42,7 +42,7 @@ function CardCategoria({ categoria }: CardCategoriaProps) {
       className="
         w-full
         rounded-2xl shadow-md p-6
-        bg-gradient-to-r from-yellow-200 via-pink-200 to-pink-300
+        bg-linear-to-r from-yellow-200 via-pink-200 to-pink-300
         transition-all duration-300
         hover:scale-[1.02] hover:shadow-xl
         animate-fadeIn

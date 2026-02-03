@@ -59,7 +59,6 @@ export default function Cadastro() {
   async function cadastrarNovoUsuario(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // Validações
     if (!usuario.nome.trim()) {
       ToastAlerta('Nome é obrigatório!', 'error');
       return;
@@ -95,7 +94,6 @@ export default function Cadastro() {
     setIsLoading(true);
 
     try {
-      // Preparar dados para envio
       const dadosCadastro = {
         nome: usuario.nome.trim(),
         usuario: usuario.usuario.trim(),
@@ -108,19 +106,7 @@ export default function Cadastro() {
 
       await cadastrarUsuario(`/usuarios/cadastrar`, dadosCadastro, setUsuario);
       ToastAlerta('Usuário cadastrado com sucesso!', 'success');
-      
-      // Limpar formulário
-      setUsuario({
-        id: 0,
-        nome: '',
-        usuario: '',
-        senha: '',
-        foto: '',
-        sexo: '',
-        data: '',
-        tipoUsuario: 'PASSAGEIRO'
-      });
-      setConfirmaSenha('');
+      navigate('/login');
 
     } catch (error: any) {
       const mensagemErro = error.response?.data?.message || 'Erro ao cadastrar o usuário!';
@@ -138,9 +124,9 @@ export default function Cadastro() {
   return (
     <div className="relative flex items-center justify-center min-h-screen overflow-hidden bg-white">
 
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-white to-rose-50" />
-      <div className="absolute w-[600px] h-[600px] bg-yellow-200/20 rounded-full blur-3xl -top-40 -left-40" />
-      <div className="absolute w-[600px] h-[600px] bg-pink-200/20 rounded-full blur-3xl -bottom-40 -right-40" />
+      <div className="absolute inset-0 bg-linear-to-br from-yellow-50 via-white to-rose-50" />
+      <div className="absolute w-150 h-150 bg-yellow-200/20 rounded-full blur-3xl -top-40 -left-40" />
+      <div className="absolute w-150 h-150 bg-pink-200/20 rounded-full blur-3xl -bottom-40 -right-40" />
 
       <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white/85 backdrop-blur-md border border-white/60 shadow-lg p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl">
 
@@ -150,7 +136,6 @@ export default function Cadastro() {
 
         <form onSubmit={cadastrarNovoUsuario} className="flex flex-col gap-4">
 
-          {/* Toggle entre Cliente e Motorista */}
           <div className="flex gap-2 bg-stone-100/80 p-1 rounded-xl backdrop-blur-sm">
             <button
               type="button"
@@ -233,7 +218,7 @@ export default function Cadastro() {
           <button
             type="submit"
             disabled={isLoading}
-            className="mt-2 py-3 rounded-lg font-medium text-gray-900 bg-gradient-to-r from-yellow-200 via-pink-200 to-rose-200 shadow-md transition-all duration-300 hover:from-amber-300 hover:via-orange-200 hover:to-rose-300 hover:-translate-y-1 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-2 py-3 rounded-lg font-medium text-gray-900 bg-linear-to-br from-yellow-200 via-pink-200 to-rose-200 shadow-md transition-all duration-300 hover:from-amber-300 hover:via-orange-200 hover:to-rose-300 hover:-translate-y-1 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Cadastrando..." : "Cadastrar"}
           </button>
