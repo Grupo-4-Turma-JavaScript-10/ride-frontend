@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext"; // ADICIONE ESTA LINHA
+import { AuthProvider } from "./contexts/AuthContext";
 import Footer from "./components/footer/footer";
 import Navbar from "./components/navbar/navbar";
 import Home from "./pages/home/Home";
@@ -20,6 +20,7 @@ function App() {
         <AuthProvider>
           <ToastContainer />
           <Navbar />
+
           <main className="min-h-screen flex flex-col">
             <Routes>
               <Route path='/' element={<Home />} />
@@ -34,11 +35,11 @@ function App() {
               <Route path="/deletarcategoria/:id" element={<DeletarCategoria/>} />
             </Routes>
           </main>
+
           <Footer />
         </AuthProvider>
       </BrowserRouter>
     </>
   );
 }
-
 export default App;
