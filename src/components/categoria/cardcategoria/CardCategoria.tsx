@@ -42,13 +42,15 @@ function DeletarCategoria() {
     buscarPorId()
   }, [token, buscarPorId, navigate])
 
-  async function deletarCategoria() {
-    setIsLoading(true)
+ async function deletarCategoria() {
+  if (!id) return
 
-    try {
-      await deletar(`/categorias/${id}`, {
-        headers: { Authorization: token }
-      })
+  setIsLoading(true)
+
+  try {
+    await deletar(`/categorias/${id}`, {
+      headers: { Authorization: token }
+    })
 
       setConfirmado(true)
       ToastAlerta("Veículo apagado com sucesso!", "success")
@@ -118,14 +120,21 @@ function DeletarCategoria() {
                 Cancelar
               </button>
 
-              <button
-                onClick={deletarCategoria}
-                disabled={isLoading}
-                className="px-8 py-3 rounded-full bg-pink-400 text-white font-semibold shadow-lg
-                           hover:bg-red-500 hover:scale-105 transition"
-              >
-                {isLoading ? <ClipLoader size={20} color="#fff" /> : "Confirmar Exclusão"}
-              </button>
+       <button
+  onClick={deletarCategoria}
+  disabled={isLoading}
+  className={`
+    px-8 py-3 rounded-full text-white font-semibold shadow-lg transition
+    ${isLoading 
+      ? "bg-gray-400 cursor-not-allowed" 
+      : "bg-pink-400 hover:bg-red-500 hover:scale-105"}
+  `}
+>
+  {isLoading 
+    ? <ClipLoader size={20} color="#fff" /> 
+    : "Confirmar Exclusão"}
+</button>
+
             </div>
           </>
         ) : (

@@ -14,7 +14,8 @@ function ListaCategorias() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   const { usuario, handleLogout } = useContext(AuthContext);
-  const token = usuario.token;
+const token = usuario?.token ?? "";
+
 
   useEffect(() => {
     if (token === "") {
@@ -34,7 +35,7 @@ function ListaCategorias() {
       setIsLoading(true);
 
       await buscar("/categorias", setCategorias, {
-        headers: { Authorization: token },
+       headers: { Authorization: `Bearer ${token}` }
       });
     } catch (error: any) {
       if (error.toString().includes("401")) {
@@ -63,6 +64,8 @@ function ListaCategorias() {
               </h1>
 
               <button
+  onClick={() => navigate("/cadastrarcategoria")}
+
                 className="
                   px-5 py-2.5
                   rounded-xl
