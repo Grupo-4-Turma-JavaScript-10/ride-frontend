@@ -4,6 +4,12 @@ const api = axios.create({
   baseURL: "https://ride-backend-o0yt.onrender.com",
 });
 
+export const authHeader = (token: string) => ({
+  headers: {
+    Authorization: token
+  }
+});
+
 export const cadastrarUsuario = async (
   url: string,
   dados: Object,
