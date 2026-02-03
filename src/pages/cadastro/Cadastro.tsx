@@ -24,7 +24,7 @@ export default function Cadastro() {
     foto: '',
     sexo: '',
     data: '',
-    tipoUsuario: 'CLIENTE' // fixo
+    tipoUsuario: 'CLIENTE' 
   });
 
   useEffect(() => {

@@ -20,7 +20,6 @@ function PerfilPage() {
     },
   };
 
-  /* 🔹 Buscar usuário logado */
   useEffect(() => {
     async function carregarUsuario() {
       try {
@@ -35,7 +34,6 @@ function PerfilPage() {
     carregarUsuario();
   }, []);
 
-  /* 🔹 Atualizar perfil */
   const handleUpdateUsuario = async (usuarioAtualizado: Usuario) => {
     try {
       await atualizar('/usuarios', usuarioAtualizado, setUsuario, header);
@@ -66,13 +64,11 @@ function PerfilPage() {
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
 
-        {/* 👤 Perfil */}
         <PerfilUsuario
           usuario={usuario}
           onUpdate={handleUpdateUsuario}
         />
-
-        {/* 🚗 Corridas (podem vir vazias) */}
+        
         <CorridasUsuario
           produtos={usuario.produto ?? []}
           tipoUsuario={usuario.tipoUsuario}
