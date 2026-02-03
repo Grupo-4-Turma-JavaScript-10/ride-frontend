@@ -29,10 +29,10 @@ function PerfilPage() {
   async function handleUpdateUsuario(usuarioAtualizado: Usuario) {
     const payload = {
       ...usuarioAtualizado,
-      tipoUsuario: usuarioAtualizado.tipoUsuario || "PASSAGEIRO",  // Default para "PASSAGEIRO"
-      sexo: usuarioAtualizado.sexo || "M",  // Default para "M"
-      data: usuarioAtualizado.data || new Date().toISOString(),  // Default para data atual
-      produto: usuarioAtualizado.produto ?? [],  // Garantir que "produto" seja um array
+      tipoUsuario: usuarioAtualizado.tipoUsuario || "PASSAGEIRO",  
+      sexo: usuarioAtualizado.sexo || "M",  
+      data: usuarioAtualizado.data || new Date().toISOString(),  
+      produto: usuarioAtualizado.produto ?? [],  
     };
 
     try {

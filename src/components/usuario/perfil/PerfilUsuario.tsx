@@ -131,7 +131,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                 {!isEditing && (
                     <button
                         onClick={() => setIsEditing(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                        className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg transition-colors"
                     >
                         Editar Perfil
                     </button>
@@ -161,7 +161,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                         {isEditing && (
                             <Popup
                                 trigger={
-                                    <button className="absolute bottom-2 right-2 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors">
+                                    <button className="absolute bottom-2 right-2 bg-black hover:bg-gray-800 text-white p-3 rounded-full shadow-lg transition-colors">
                                         <CameraIcon size={20} />
                                     </button>
                                 }
