@@ -16,19 +16,25 @@ function DeletarCategoria() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const { usuario, handleLogout } = useContext(AuthContext)
- const token = usuario?.token ?? ""
-
+  const token = usuario?.token || localStorage.getItem('token') || "";
 
   const { id } = useParams<{ id: string }>()
 
   async function buscarPorId(id: string) {
     try {
-      await buscar(`/categorias/${id}`, setCategoria, {
-        headers: { Authorization: token }
-      })
+      const header = {
+        headers: { 
+          Authorization: token.startsWith('Bearer ') ? token : `Bearer ${token}`
+        }
+      };
+      
+      await buscar(`/categorias/${id}`, setCategoria, header);
     } catch (error: any) {
-      if (error.toString().includes("401")) {
-        handleLogout()
+      if (error.toString().includes("401") || error.response?.status === 401) {
+        ToastAlerta('Sessão expirada. Faça login novamente.', 'error');
+        handleLogout();
+      } else {
+        ToastAlerta('Erro ao carregar veículo.', 'error');
       }
     }
   }
@@ -36,23 +42,27 @@ function DeletarCategoria() {
   useEffect(() => {
     if (token === "") {
       ToastAlerta("Você precisa estar logado!", "error")
-      navigate("/")
+      navigate("/login")
     }
-  }, [token])
+  }, [token, navigate])
 
   useEffect(() => {
-    if (id !== undefined) {
+    if (id !== undefined && token !== "") {
       buscarPorId(id)
     }
-  }, [id])
+  }, [id, token])
 
   async function deletarCategoria() {
     setIsLoading(true)
 
+    const header = {
+      headers: { 
+        Authorization: token.startsWith('Bearer ') ? token : `Bearer ${token}`
+      }
+    };
+
     try {
-      await deletar(`/categorias/${id}`, {
-        headers: { Authorization: token }
-      })
+      await deletar(`/categorias/${id}`, header);
 
       setConfirmado(true)
       ToastAlerta("Veículo apagado com sucesso!", "success")
@@ -62,8 +72,9 @@ function DeletarCategoria() {
       }, 1800)
 
     } catch (error: any) {
-      if (error.toString().includes("401")) {
-        handleLogout()
+      if (error.toString().includes("401") || error.response?.status === 401) {
+        ToastAlerta('Sessão expirada. Faça login novamente.', 'error');
+        handleLogout();
       } else {
         ToastAlerta("Erro ao deletar o veículo!", "error")
       }
@@ -134,7 +145,7 @@ function DeletarCategoria() {
               <button
                 onClick={deletarCategoria}
                 disabled={isLoading}
-                className="px-8 py-3 rounded-full bg-pink-400 text-white font-semibold shadow-lg hover:bg-red-500 transition-all duration-300 hover:scale-105"
+                className="px-8 py-3 rounded-full bg-pink-400 text-white font-semibold shadow-lg hover:bg-red-500 transition-all duration-300 hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <ClipLoader size={20} color="#fff" />
@@ -158,65 +169,6 @@ function DeletarCategoria() {
           </div>
         )}
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          0% { opacity: 0; transform: translateY(-20px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes bounceIn {
-          0% { transform: scale(0.5); opacity: 0; }
-          60% { transform: scale(1.2); opacity: 1; }
-          100% { transform: scale(1); }
-        }
-
-        @keyframes successFade {
-          0% { opacity: 0; }
-          100% { opacity: 1; }
-        }
-
-        @keyframes fadeInOverlay {
-          0% { opacity: 0; }
-          100% { opacity: 1; }
-        }
-
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-12px); }
-          100% { transform: translateY(0px); }
-        }
-
-        @keyframes glowPulse {
-          0% { box-shadow: 0 0 40px rgba(0,0,0,0.2); }
-          50% { box-shadow: 0 0 80px rgba(0,0,0,0.35); }
-          100% { box-shadow: 0 0 40px rgba(0,0,0,0.2); }
-        }
-
-        .animate-fadeInUp {
-          animation: fadeInUp 0.5s ease forwards;
-        }
-
-        .animate-bounceIn {
-          animation: bounceIn 0.6s ease forwards;
-        }
-
-        .animate-successFade {
-          animation: successFade 0.5s ease forwards;
-        }
-
-        .animate-fadeInOverlay {
-          animation: fadeInOverlay 0.4s ease forwards;
-        }
-
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-
-        .animate-glow {
-          animation: glowPulse 2.5s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   )
 }

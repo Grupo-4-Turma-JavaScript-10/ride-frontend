@@ -12,81 +12,93 @@ function FormCategoria() {
     const [categoria, setCategoria] = useState<Categoria>({} as Categoria)
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
-    const { usuario, handleLogout } = useContext(AuthContext)
-    const token = usuario.token
+    const { usuario, handleLogout } = useContext(AuthContext);
+    const token = usuario?.token || localStorage.getItem('token') || "";
 
     const { id } = useParams<{ id: string }>();
 
     async function buscarPorId(id: string) {
         try {
-            await buscar(`/categorias/${id}`, setCategoria, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+            const header = {
+                headers: { 
+                    Authorization: token.startsWith('Bearer ') ? token : `Bearer ${token}`
+                }
+            };
+            
+            await buscar(`/categorias/${id}`, setCategoria, header);
         } catch (error: any) {
-            if (error.toString().includes('401')) {
-                handleLogout()
+            if (error.toString().includes('401') || error.response?.status === 401) {
+                ToastAlerta('Sessão expirada. Faça login novamente.', 'error');
+                handleLogout();
+            } else {
+                ToastAlerta('Erro ao carregar veículo.', 'error');
             }
         }
     }
 
     useEffect(() => {
         if (token === '') {
-            ToastAlerta('Você precisa estar logado!', 'error')
-            navigate('/')
+            ToastAlerta('Você precisa estar logado!', 'error');
+            navigate('/login');
         }
-    }, [token])
+    }, [token, navigate]);
 
     useEffect(() => {
-        if (id !== undefined) {
-            buscarPorId(id)
+        if (id !== undefined && token !== '') {
+            buscarPorId(id);
         }
-    }, [id])
+    }, [id, token]);
 
     function atualizarEstado(e: ChangeEvent<HTMLInputElement>) {
         setCategoria({
             ...categoria,
             [e.target.name]: e.target.value
-        })
+        });
     }
 
     function retornar() {
-        navigate('/categorias')
+        navigate('/categorias');
     }
 
     async function gerarNovaCategoria(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault()
-        setIsLoading(true)
+        e.preventDefault();
+        setIsLoading(true);
+
+        const header = {
+            headers: { 
+                Authorization: token.startsWith('Bearer ') ? token : `Bearer ${token}`
+            }
+        };
 
         if (id !== undefined) {
             try {
-                await atualizar(`/categorias`, categoria, setCategoria, {
-                    headers: { Authorization: `Bearer ${token}` }
-                })
-                ToastAlerta('O veículo foi atualizado com sucesso!', 'success')
+                await atualizar(`/categorias`, categoria, setCategoria, header);
+                ToastAlerta('O veículo foi atualizado com sucesso!', 'success');
+                retornar();
             } catch (error: any) {
-                if (error.toString().includes('401')) {
+                if (error.toString().includes('401') || error.response?.status === 401) {
+                    ToastAlerta('Sessão expirada. Faça login novamente.', 'error');
                     handleLogout();
                 } else {
-                    ToastAlerta('Erro ao atualizar o veículo.', 'error')
+                    ToastAlerta('Erro ao atualizar o veículo.', 'error');
                 }
             }
         } else {
             try {
-                await cadastrar(`/categorias`, categoria, setCategoria, {
-                    headers: { Authorization: `Bearer ${token}` }
-                })
-                ToastAlerta('O veículo foi cadastrado com sucesso!', 'success')
+                await cadastrar(`/categorias`, categoria, setCategoria, header);
+                ToastAlerta('O veículo foi cadastrado com sucesso!', 'success');
+                retornar();
             } catch (error: any) {
-                if (error.toString().includes('401')) {
+                if (error.toString().includes('401') || error.response?.status === 401) {
+                    ToastAlerta('Sessão expirada. Faça login novamente.', 'error');
                     handleLogout();
                 } else {
-                    ToastAlerta('Erro ao cadastrar o veículo!', 'error')
+                    ToastAlerta('Erro ao cadastrar o veículo!', 'error');
                 }
             }
         }
 
-        setIsLoading(false)
-        retornar()
+        setIsLoading(false);
     }
 
     return (
@@ -207,28 +219,28 @@ function FormCategoria() {
                             Cancelar
                         </button>
 
-                       <button
-  type="submit"
-  disabled={isLoading}
-  className="
-    px-8 py-3
-    rounded-full
-    bg-pink-400
-    text-white
-    font-semibold
-    shadow-lg
-    hover:bg-pink-500
-    transition-all duration-300
-    transform hover:scale-105
-    disabled:bg-gray-400 disabled:cursor-not-allowed
-  "
->
-  {isLoading ? (
-    <ClipLoader color="#ffffff" size={20} />
-  ) : (
-    id ? "Atualizar" : "Cadastrar"
-  )}
-</button>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="
+                                px-8 py-3
+                                rounded-full
+                                bg-pink-400
+                                text-white
+                                font-semibold
+                                shadow-lg
+                                hover:bg-pink-500
+                                transition-all duration-300
+                                transform hover:scale-105
+                                disabled:bg-gray-400 disabled:cursor-not-allowed
+                            "
+                        >
+                            {isLoading ? (
+                                <ClipLoader color="#ffffff" size={20} />
+                            ) : (
+                                id ? "Atualizar" : "Cadastrar"
+                            )}
+                        </button>
 
                     </div>
                 </form>

@@ -9,9 +9,9 @@ export function mapUsuarioLoginParaUsuario(u: UsuarioLogin): Usuario {
     tipoUsuario: u.tipoUsuario === "" ? "PASSAGEIRO" : u.tipoUsuario,
     foto: u.foto,
     produto: u.produto ?? [],
-    sexo: "M", // default ou substituir por valor real do backend
+    sexo: "M", 
     data: new Date().toISOString(),
-    senha: "", // manter vazio por segurança
+    senha: "", 
   };
 }
 export default mapUsuarioLoginParaUsuario;

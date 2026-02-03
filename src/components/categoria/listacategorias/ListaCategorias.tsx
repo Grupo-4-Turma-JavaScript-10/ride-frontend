@@ -5,22 +5,34 @@ import { AuthContext } from "../../../contexts/AuthContext";
 import { useState, useContext, useEffect } from "react";
 import CardCategoria from "../cardcategoria/CardCategoria";
 import { useNavigate } from "react-router-dom";
-import { SyncLoader } from "react-spinners";
+
+// Spinner customizado
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative">
+          <div className="w-12 h-12 border-4 border-pink-200 rounded-full"></div>
+          <div className="w-12 h-12 border-4 border-pink-500 rounded-full border-t-transparent animate-spin absolute top-0 left-0"></div>
+        </div>
+        <span className="text-gray-600 font-medium">Carregando veículos...</span>
+      </div>
+    </div>
+  );
+}
 
 function ListaCategorias() {
   const navigate = useNavigate();
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-
   const { usuario, handleLogout } = useContext(AuthContext);
-const token = usuario?.token ?? "";
-
+  
+  const token = usuario?.token || localStorage.getItem('token') || "";
 
   useEffect(() => {
     if (token === "") {
       ToastAlerta("Você precisa estar logado!", "error");
-      navigate("/");
+      navigate("/login");
     }
   }, [token, navigate]);
 
@@ -33,13 +45,21 @@ const token = usuario?.token ?? "";
   async function buscarCategorias() {
     try {
       setIsLoading(true);
-
-      await buscar("/categorias", setCategorias, {
-       headers: { Authorization: `Bearer ${token}` }
-      });
+      
+      const header = {
+        headers: { 
+          Authorization: token.startsWith('Bearer ') ? token : `Bearer ${token}`
+        }
+      };
+      
+      await buscar("/categorias", setCategorias, header);
+      
     } catch (error: any) {
-      if (error.toString().includes("401")) {
+      if (error.toString().includes("401") || error.response?.status === 401) {
+        ToastAlerta("Sessão expirada. Faça login novamente.", "error");
         handleLogout();
+      } else {
+        ToastAlerta("Erro ao carregar veículos. Tente novamente.", "error");
       }
     } finally {
       setIsLoading(false);
@@ -48,28 +68,21 @@ const token = usuario?.token ?? "";
 
   return (
     <>
-      {isLoading && (
-        <div className="min-h-screen bg-gray-100 flex justify-center items-center">
-          <SyncLoader color="#ec4899" size={12} />
-        </div>
-      )}
-
+      {isLoading && <LoadingSpinner />}
+      
       {!isLoading && (
         <div className="min-h-screen bg-gray-100 py-12 px-6 flex justify-center">
           <div className="w-full max-w-5xl">
-
             <div className="flex items-center justify-between mb-10">
               <h1 className="text-3xl font-bold text-gray-800">
                 Perfis de Veículo
               </h1>
-
               <button
-  onClick={() => navigate("/cadastrarcategoria")}
-
+                onClick={() => navigate("/cadastrarcategoria")}
                 className="
                   px-5 py-2.5
                   rounded-xl
-                  bg-linear-to-r from-pink-300 to-pink-400
+                  bg-gradient-to-r from-pink-300 to-pink-400
                   hover:from-pink-400 hover:to-pink-500
                   text-white font-medium
                   shadow-md
@@ -80,14 +93,22 @@ const token = usuario?.token ?? "";
                 + Novo Veículo
               </button>
             </div>
-
+            
             <div className="space-y-4">
               {categorias.length === 0 && (
-                <span className="text-lg text-gray-600 block text-center my-8">
-                  Nenhum veículo foi encontrado!
-                </span>
+                <div className="text-center my-8">
+                  <span className="text-lg text-gray-600 block">
+                    Nenhum veículo foi encontrado!
+                  </span>
+                  <button
+                    onClick={buscarCategorias}
+                    className="mt-4 text-pink-500 hover:text-pink-600 underline"
+                  >
+                    Tentar novamente
+                  </button>
+                </div>
               )}
-
+              
               {categorias.map((categoria) => (
                 <CardCategoria
                   key={categoria.id}
@@ -95,7 +116,6 @@ const token = usuario?.token ?? "";
                 />
               ))}
             </div>
-
           </div>
         </div>
       )}

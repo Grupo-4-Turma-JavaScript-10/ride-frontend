@@ -1,152 +1,130 @@
-import { useState, useContext, useEffect, useCallback } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import type Categoria from "../../../models/Categoria"
-import { ToastAlerta } from "../../../util/ToastAlerta"
-import { deletar, buscar } from "../../../services/Service"
-import { AuthContext } from "../../../contexts/AuthContext"
-import { ClipLoader } from "react-spinners"
-import { Check } from "lucide-react"
+import { useContext } from "react";
+import type Categoria from "../../../models/Categoria";
+import { Link, useNavigate } from "react-router-dom";
+import { Pencil, Trash2 } from "lucide-react";
+import { AuthContext } from "../../../contexts/AuthContext";
+import { ToastAlerta } from "../../../util/ToastAlerta";
 
-function DeletarCategoria() {
-  const navigate = useNavigate()
-  const { id } = useParams<{ id: string }>()
-
-  const { usuario, handleLogout } = useContext(AuthContext)
-  const token = usuario?.token ?? ""
-
-  const [categoria, setCategoria] = useState<Categoria>({} as Categoria)
-  const [confirmado, setConfirmado] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-
-  const buscarPorId = useCallback(async () => {
-    if (!id) return
-
-    try {
-      await buscar(`/categorias/${id}`, setCategoria, {
-        headers: { Authorization: token }
-      })
-    } catch (error: any) {
-      if (error.toString().includes("401")) {
-        handleLogout()
-      }
-    }
-  }, [id, token, handleLogout])
-
-  useEffect(() => {
-    if (!token) {
-      ToastAlerta("Você precisa estar logado!", "error")
-      navigate("/")
-      return
-    }
-
-    buscarPorId()
-  }, [token, buscarPorId, navigate])
-
- async function deletarCategoria() {
-  if (!id) return
-
-  setIsLoading(true)
-
-  try {
-    await deletar(`/categorias/${id}`, {
-      headers: { Authorization: token }
-    })
-
-      setConfirmado(true)
-      ToastAlerta("Veículo apagado com sucesso!", "success")
-
-      setTimeout(() => navigate("/categorias"), 1800)
-    } catch (error: any) {
-      if (error.toString().includes("401")) {
-        handleLogout()
-      } else {
-        ToastAlerta("Erro ao deletar o veículo!", "error")
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return (
-    <div className="relative flex justify-center items-center py-10 bg-gray-100 min-h-screen overflow-hidden">
-
-      {confirmado && (
-        <div className="absolute inset-0 backdrop-blur-md bg-black/20 animate-fadeInOverlay" />
-      )}
-
-      <div
-        className={`
-          relative z-10 w-full max-w-3xl p-10 rounded-3xl shadow-2xl
-          transition-all duration-500 animate-fadeInUp
-          ${confirmado
-            ? "bg-green-400 scale-105 animate-float animate-glow"
-            : "bg-gradient-custom"}
-        `}
-      >
-        {!confirmado ? (
-          <>
-            <h2 className="text-3xl font-bold text-gray-800 mb-10">
-              Deletar Veículo
-            </h2>
-
-            <div className="bg-white/80 rounded-2xl p-8 shadow-md">
-              <p className="text-lg text-gray-800 mb-6">
-                Você tem certeza que deseja excluir o veículo:
-              </p>
-
-              <div className="grid md:grid-cols-2 gap-6 text-gray-800">
-                <div>
-                  <span className="text-sm text-gray-600">Carro</span>
-                  <p className="font-semibold">{categoria.carro}</p>
-                </div>
-
-                <div>
-                  <span className="text-sm text-gray-600">Modelo</span>
-                  <p className="font-semibold">{categoria.modelo}</p>
-                </div>
-
-                <div>
-                  <span className="text-sm text-gray-600">Placa</span>
-                  <p className="font-semibold">{categoria.placa}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-5 mt-12">
-              <button
-                onClick={() => navigate("/categorias")}
-                className="px-8 py-3 rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 transition"
-              >
-                Cancelar
-              </button>
-
-       <button
-  onClick={deletarCategoria}
-  disabled={isLoading}
-  className={`
-    px-8 py-3 rounded-full text-white font-semibold shadow-lg transition
-    ${isLoading 
-      ? "bg-gray-400 cursor-not-allowed" 
-      : "bg-pink-400 hover:bg-red-500 hover:scale-105"}
-  `}
->
-  {isLoading 
-    ? <ClipLoader size={20} color="#fff" /> 
-    : "Confirmar Exclusão"}
-</button>
-
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-col items-center py-20 text-white animate-successFade">
-            <Check size={90} />
-            <h3 className="text-3xl font-bold mt-6">Veículo Excluído!</h3>
-            <p className="opacity-90 mt-2">Redirecionando...</p>
-          </div>
-        )}
-      </div>
-    </div>
-  )
+interface CardCategoriaProps {
+  categoria: Categoria;
 }
 
-export default DeletarCategoria
+function CardCategoria({ categoria }: CardCategoriaProps) {
+  const navigate = useNavigate();
+  const { usuario } = useContext(AuthContext);
+  const token = usuario?.token || localStorage.getItem('token') || "";
+  
+  const headingId = `categoria-${categoria.id}-titulo`;
+  
+  const handleEdit = (e: React.MouseEvent) => {
+    if (!token) {
+      e.preventDefault();
+      ToastAlerta("Você precisa estar logado!", "error");
+      navigate("/login");
+      return;
+    }
+    navigate(`/editarcategoria/${categoria.id}`);
+  };
+  
+  const handleDelete = (e: React.MouseEvent) => {
+    if (!token) {
+      e.preventDefault();
+      ToastAlerta("Você precisa estar logado!", "error");
+      navigate("/login");
+      return;
+    }
+    navigate(`/deletarcategoria/${categoria.id}`);
+  };
+  
+  return (
+    <div
+      aria-labelledby={headingId}
+      className="
+        w-full
+        rounded-2xl shadow-md p-6
+        bg-gradient-to-r from-yellow-200 via-pink-200 to-pink-300
+        transition-all duration-300
+        hover:scale-[1.02] hover:shadow-xl
+        animate-fadeIn
+      "
+    >
+      <div className="flex justify-between items-center mb-4">
+        <h2 id={headingId} className="text-xl font-bold text-gray-800">
+          Detalhes do Veículo
+        </h2>
+        
+        <div className="flex gap-3">
+          <button
+            onClick={handleEdit}
+            aria-label="Editar categoria"
+            className="
+              p-2 rounded-full bg-white/70
+              hover:bg-white
+              transition
+              hover:scale-110
+              flex items-center justify-center
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800/40
+            "
+          >
+            <Pencil size={18} className="text-gray-700" />
+            <span className="sr-only">Editar categoria</span>
+          </button>
+          
+          <button
+            onClick={handleDelete}
+            aria-label="Excluir categoria"
+            className="
+              p-2 rounded-full bg-white/70
+              transition-all duration-300
+              hover:bg-red-100
+              hover:scale-110
+              flex items-center justify-center
+              group hover:animate-shake
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400
+            "
+          >
+            <Trash2
+              size={18}
+              className="text-gray-700 transition-colors duration-300 group-hover:text-red-500"
+            />
+            <span className="sr-only">Excluir categoria</span>
+          </button>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-gray-800">
+        <div>
+          <p className="text-sm text-gray-600">Carro:</p>
+          <p className="font-semibold">{categoria.carro}</p>
+        </div>
+        
+        <div>
+          <p className="text-sm text-gray-600">Fabricante:</p>
+          <p className="font-semibold">{categoria.fabricante}</p>
+        </div>
+        
+        <div>
+          <p className="text-sm text-gray-600">Modelo:</p>
+          <p className="font-semibold">{categoria.modelo}</p>
+        </div>
+        
+        <div>
+          <p className="text-sm text-gray-600">Ano:</p>
+          <p className="font-semibold">{categoria.ano}</p>
+        </div>
+        
+        <div>
+          <p className="text-sm text-gray-600">Cor:</p>
+          <p className="font-semibold">{categoria.cor}</p>
+        </div>
+        
+        <div>
+          <p className="text-sm text-gray-600">Placa:</p>
+          <p className="font-semibold">{categoria.placa}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default CardCategoria;
