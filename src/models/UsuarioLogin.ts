@@ -7,4 +7,5 @@ export default interface UsuarioLogin {
     tipoUsuario: string;
     foto: string;
     token: string;
+    produto?: [];
 }

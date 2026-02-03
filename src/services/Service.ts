@@ -4,26 +4,6 @@ const api = axios.create({
   baseURL: "https://ride-backend-o0yt.onrender.com",
 });
 
-type Header = {
-  headers: {
-    Authorization: string;
-  };
-};
-
-// Função auxiliar para validar e obter o token
-const getAuthHeader = (): Header => {
-  const token = localStorage.getItem('token'); // ou sessionStorage
-  
-  if (!token) {
-    throw new Error('Token não encontrado. Faça login novamente.');
-  }
-  
-  return {
-    headers: {
-      Authorization: `Bearer ${token}` // Certifique-se que tem o prefixo "Bearer"
-    }
-  };
-};
 
 export const cadastrarUsuario = async (
   url: string,
@@ -67,7 +47,7 @@ export const cadastrar = async (
   url: string,
   dados: Object,
   setDados: Function,
-  header: Header
+  header: object
 ) => {
   console.log("📤 [cadastrar] Header:", header);
   try {
@@ -109,7 +89,7 @@ export const atualizar = async (
 export const buscar = async (
   url: string,
   setDados: Function,
-  header?: Header
+  header?: object
 ) => {
   try {
     const resposta = await api.get(url, header);
@@ -120,7 +100,7 @@ export const buscar = async (
   }
 };
 
-export const deletar = async (url: string, header: Header) => {
+export const deletar = async (url: string, header: object) => {
   try {
     await api.delete(url, header);
   } catch (error: any) {
@@ -133,7 +113,7 @@ export const deletar = async (url: string, header: Header) => {
 export const calcularTempo = async (
   produtoId: number,
   setTempo: Function,
-  header: Header
+  header: object
 ) => {
   try {
     const resposta = await api.get(`/produtos/calculartempo/${produtoId}`, header);
@@ -147,7 +127,7 @@ export const calcularTempo = async (
 export const mudarTipoViagem = async (
   produtoId: number,
   setDados: Function,
-  header: Header
+  header: object
 ) => {
   try {
     const resposta = await api.get(`/produtos/mudarTipoViagem/${produtoId}`, header);

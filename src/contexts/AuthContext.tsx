@@ -2,6 +2,7 @@ import { createContext, useState, type ReactNode, useEffect } from "react";
 import { ToastAlerta } from "../util/ToastAlerta";
 import { login } from "../services/Service";
 import { useNavigate } from "react-router-dom";
+import type Produto from "../models/Produto";
 
 export interface UsuarioLogin {
     id: number;
@@ -11,6 +12,7 @@ export interface UsuarioLogin {
     senha: string;
     foto: string;
     token: string;
+    produto?: Produto[];
 }
 
 interface AuthContextProps {
@@ -39,7 +41,8 @@ export function AuthProvider({ children }: AuthProvidersProps) {
         tipoUsuario: "",
         senha: "",
         foto: "",
-        token: ""
+        token: "",
+        produto: []
     });
     
     const [isLoading, setIsLoading] = useState(false);
@@ -85,7 +88,8 @@ export function AuthProvider({ children }: AuthProvidersProps) {
                     nome: usuarioRetornado.nome,
                     usuario: usuarioRetornado.usuario,
                     tipoUsuario: usuarioRetornado.tipoUsuario,
-                    foto: usuarioRetornado.foto
+                    foto: usuarioRetornado.foto,
+                    produto: usuarioRetornado.produto
                 }));
             });
             
