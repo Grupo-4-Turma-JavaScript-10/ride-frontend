@@ -10,18 +10,57 @@ type Header = {
   };
 };
 
+// Função auxiliar para validar e obter o token
+const getAuthHeader = (): Header => {
+  const token = localStorage.getItem('token'); // ou sessionStorage
+  
+  if (!token) {
+    throw new Error('Token não encontrado. Faça login novamente.');
+  }
+  
+  return {
+    headers: {
+      Authorization: `Bearer ${token}` // Certifique-se que tem o prefixo "Bearer"
+    }
+  };
+};
+
 export const cadastrarUsuario = async (
   url: string,
   dados: Object,
   setDados: Function
 ) => {
-  const resposta = await api.post(url, dados);
-  setDados(resposta.data);
+  console.log("📤 [cadastrarUsuario] Enviando para:", url);
+  console.log("📤 [cadastrarUsuario] Dados:", dados);
+  
+  try {
+    const resposta = await api.post(url, dados);
+    console.log("✅ [cadastrarUsuario] Resposta:", resposta.data);
+    setDados(resposta.data);
+  } catch (error: any) {
+    console.error("❌ [cadastrarUsuario] Erro:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 export const login = async (url: string, dados: Object, setDados: Function) => {
-  const resposta = await api.post(url, dados);
-  setDados(resposta.data);
+  console.log("📤 [login] Enviando para:", url);
+  console.log("📤 [login] Dados:", dados);
+  
+  try {
+    const resposta = await api.post(url, dados);
+    console.log("✅ [login] Resposta:", resposta.data);
+    
+    // Salvar o token após login bem-sucedido
+    if (resposta.data.token) {
+      localStorage.setItem('token', resposta.data.token);
+    }
+    
+    setDados(resposta.data);
+  } catch (error: any) {
+    console.error("❌ [login] Erro:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 export const cadastrar = async (
@@ -30,18 +69,41 @@ export const cadastrar = async (
   setDados: Function,
   header: Header
 ) => {
-  const resposta = await api.post(url, dados, header);
-  setDados(resposta.data);
+  console.log("📤 [cadastrar] Header:", header);
+  try {
+    const resposta = await api.post(url, dados, header);
+    setDados(resposta.data);
+  } catch (error: any) {
+    console.error("❌ [cadastrar] Erro:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 export const atualizar = async (
   url: string,
   dados: Object,
   setDados: Function,
-  header: Header
+  header: object
 ) => {
-  const resposta = await api.put(url, dados, header);
-  setDados(resposta.data);
+  console.log("📤 [atualizar] URL:", url);
+  console.log("📤 [atualizar] Dados:", dados);
+  console.log("📤 [atualizar] Header:", header);
+  
+  try {
+    const resposta = await api.put(url, dados, header);
+    console.log("✅ [atualizar] Resposta:", resposta.data);
+    setDados(resposta.data);
+  } catch (error: any) {
+    console.error("❌ [atualizar] Erro:", error.response?.data || error.message);
+    
+    // Se o erro for 401, limpar token e redirecionar para login
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      console.error("Token expirado ou inválido. Faça login novamente.");
+    }
+    
+    throw error;
+  }
 };
 
 export const buscar = async (
@@ -49,14 +111,25 @@ export const buscar = async (
   setDados: Function,
   header?: Header
 ) => {
-  const resposta = await api.get(url, header);
-  setDados(resposta.data);
+  try {
+    const resposta = await api.get(url, header);
+    setDados(resposta.data);
+  } catch (error: any) {
+    console.error("❌ [buscar] Erro:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
 export const deletar = async (url: string, header: Header) => {
-  await api.delete(url, header);
+  try {
+    await api.delete(url, header);
+  } catch (error: any) {
+    console.error("❌ [deletar] Erro:", error.response?.data || error.message);
+    throw error;
+  }
 };
 
+// CORRIGIDO: sintaxe das chamadas
 export const calcularTempo = async (
   produtoId: number,
   setTempo: Function,
@@ -65,8 +138,9 @@ export const calcularTempo = async (
   try {
     const resposta = await api.get(`/produtos/calculartempo/${produtoId}`, header);
     setTempo(resposta.data);
-  } catch (erro) {
-    console.error("Erro ao calcular tempo:", erro);
+  } catch (erro: any) {
+    console.error("❌ [calcularTempo] Erro:", erro.response?.data || erro.message);
+    throw erro;
   }
 };
 
@@ -78,7 +152,8 @@ export const mudarTipoViagem = async (
   try {
     const resposta = await api.get(`/produtos/mudarTipoViagem/${produtoId}`, header);
     setDados(resposta.data);
-  } catch (erro) {
-    console.error("Erro ao mudar tipo de viagem:", erro);
+  } catch (erro: any) {
+    console.error("❌ [mudarTipoViagem] Erro:", erro.response?.data || erro.message);
+    throw erro;
   }
 };

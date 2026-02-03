@@ -5,7 +5,7 @@ import { AuthContext } from "../contexts/AuthContext"
 
 interface ProtectedRouteProps {
     children: JSX.Element
-    tipoPermitido: "motorista" | "passageiro"
+    tipoPermitido: "MOTORISTA" | "PASSAGEIRO"
 }
 
 export function ProtectedRoute({ children, tipoPermitido }: ProtectedRouteProps) {

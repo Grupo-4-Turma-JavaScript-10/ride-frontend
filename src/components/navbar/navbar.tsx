@@ -1,16 +1,28 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
+import { useContext, useState } from "react";
+import { ToastAlerta } from "../../util/ToastAlerta";
 import Logo from "../../assets/Logo.png";
-import { useState } from "react";
 
 function Navbar() {
+  const navigate = useNavigate();
+  const { handleLogout, isAuthenticated, usuario } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
-
+  
   const navigationItems = [
     { label: "Home", path: "/home" },
     { label: "Viagens", path: "/" },
+    { label: "Perfil", path: "/perfil" },
     { label: "Sobre", path: "/sobre" },
   ];
-
+  
+  function logout() {
+    handleLogout();
+    ToastAlerta('Usuário deslogado com sucesso', 'info');
+    setIsOpen(false);
+    navigate('/');
+  }
+  
   return (
     <header className="flex bg-gradient-custom font-roboto w-full p-4 items-center">
       <Link
@@ -38,6 +50,8 @@ function Navbar() {
 
         <div
           className={`z-10 fixed flex flex-col top-0 left-0 w-fit h-full p-6 rounded-r-xl items-center sm:hidden bg-gradient-custom transition-transform duration-300 ${
+
+
             isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
