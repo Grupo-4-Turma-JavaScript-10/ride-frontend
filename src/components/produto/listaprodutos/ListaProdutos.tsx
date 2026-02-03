@@ -1,44 +1,78 @@
 import { useEffect, useState, useMemo, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type Produto from "../../../models/Produto";
+import type Categoria from "../../../models/Categoria";
 import { buscar } from "../../../services/Service";
 import CardProduto from "../cardproduto/CardProduto";
 import { AuthContext } from "../../../contexts/AuthContext";
+import { ToastAlerta } from "../../../util/ToastAlerta";
 
 function ListaProdutos() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
   const { usuario, handleLogout } = useContext(AuthContext);
-  const token = usuario.token;
+  const token = usuario?.token || localStorage.getItem("token") || "";
+  const navigate = useNavigate();
 
   const header = useMemo(() => ({
-    headers: {
-      Authorization: token,
-    },
+    headers: { Authorization: token.startsWith("Bearer") ? token : `Bearer ${token}` }
   }), [token]);
 
+  // Carrega categorias e produtos
   useEffect(() => {
-    const carregarProdutos = async () => {
+    if (!token) {
+      ToastAlerta("Você precisa estar logado!", "error");
+      navigate("/login");
+      return;
+    }
+
+    const carregarDados = async () => {
       try {
         setLoading(true);
-        await buscar("/produtos", setProdutos, header);
+
+        // 1️⃣ Buscar categorias
+        const categoriasTemp: Categoria[] = [];
+        await buscar("/categorias", (res: Categoria[]) => categoriasTemp.push(...res), header);
+        setCategorias(categoriasTemp);
+
+        // 2️⃣ Buscar produtos
+        const produtosTemp: Produto[] = [];
+        await buscar("/produtos", (res: Produto[]) => produtosTemp.push(...res), header);
+
+        // 3️⃣ Associar categoria completa a cada produto
+        const produtosComCategoria = produtosTemp.map(prod => {
+          const categoriaCompleta = categoriasTemp.find(cat => cat.id === prod.categoria?.id);
+          return {
+            ...prod,
+            categoria: categoriaCompleta || prod.categoria || {},
+          };
+        });
+
+        setProdutos(produtosComCategoria);
         setErro(null);
-      } catch {
-        setErro("Erro ao carregar produtos");
+      } catch (error: any) {
+        console.error(error);
+        if (error.toString().includes("401") || error.response?.status === 401) {
+          ToastAlerta("Sessão expirada. Faça login novamente.", "error");
+          handleLogout();
+        } else {
+          setErro("Erro ao carregar produtos");
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    carregarProdutos();
-  }, [header]);
+    carregarDados();
+  }, [token]);
 
   return (
     <div className="container mx-auto my-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <h1 className="text-4xl font-bold text-gray-800">Produtos</h1>
+        <h1 className="text-4xl font-bold text-gray-800">Caronas</h1>
         <Link
           to="/cadastrarproduto"
           className="
@@ -48,11 +82,11 @@ function ListaProdutos() {
             shadow-lg hover:scale-105 transition transform
           "
         >
-          + Novo Produto
+          + Nova Carona
         </Link>
       </div>
 
-      {loading && <p className="text-center text-gray-600">Carregando produtos...</p>}
+      {loading && <p className="text-center text-gray-600">Carregando Caronas...</p>}
       {erro && <p className="text-center text-red-600">{erro}</p>}
       {!loading && produtos.length === 0 && !erro && (
         <p className="text-center text-gray-600">Nenhum produto cadastrado ainda.</p>

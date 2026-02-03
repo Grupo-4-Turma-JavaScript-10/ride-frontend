@@ -4,13 +4,24 @@ import DashboardMotorista from "../home/homemotorista/DashboardMotorista";
 import DashboardPassageiro from "../home/homepassageiro/DashboardPassageiro";
 
 export default function Dashboard() {
-  const { usuario } = useContext(AuthContext);
+  const { usuario, isAuthenticated } = useContext(AuthContext);
 
-  if (!usuario) return null;
+  if (!isAuthenticated) {
+    return <div className="p-10">Carregando dashboard...</div>;
+  }
 
-  if (usuario.tipoUsuario === "MOTORISTA") {
+  const usuarioSalvo = localStorage.getItem("usuario");
+  const tipoUsuario =
+    usuario.tipoUsuario ||
+    (usuarioSalvo ? JSON.parse(usuarioSalvo).tipoUsuario : "");
+
+  if (tipoUsuario === "MOTORISTA") {
     return <DashboardMotorista />;
   }
 
-  return <DashboardPassageiro />;
+  if (tipoUsuario === "PASSAGEIRO") {
+    return <DashboardPassageiro />;
+  }
+
+  return <div className="p-10">Carregando perfil...</div>;
 }

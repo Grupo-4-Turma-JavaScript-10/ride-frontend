@@ -28,6 +28,22 @@
     );
   }
 
+   .input-pastel {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    background-color: white;
+    color: #333;
+    font-family: var(--font-roboto);
+    outline: none;
+  }
+
+  .input-pastel:focus {
+    border-color: #ff69b4; /* rosa para focar */
+    box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.3);
+  }
+
   .bg-gradient-pink {
     background: linear-gradient(
       to bottom,
@@ -183,4 +199,6 @@
   100% {
     transform: scale(1.05);
   }
+
+
 }
