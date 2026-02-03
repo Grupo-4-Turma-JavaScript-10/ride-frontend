@@ -16,7 +16,8 @@ function DeletarCategoria() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const { usuario, handleLogout } = useContext(AuthContext)
-  const token = usuario.token
+ const token = usuario?.token ?? ""
+
 
   const { id } = useParams<{ id: string }>()
 
@@ -78,7 +79,6 @@ function DeletarCategoria() {
   return (
     <div className="relative flex justify-center items-center py-10 bg-gray-100 min-h-screen overflow-hidden">
 
-      {/* Overlay Blur */}
       {confirmado && (
         <div className="absolute inset-0 backdrop-blur-md bg-black/20 transition-all duration-500 animate-fadeInOverlay"></div>
       )}

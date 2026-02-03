@@ -43,7 +43,6 @@ function CorridasUsuario({ produtos, tipoUsuario }: CorridasUsuarioProps) {
             }`}
           >
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-              {/* Informações principais */}
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -71,7 +70,6 @@ function CorridasUsuario({ produtos, tipoUsuario }: CorridasUsuarioProps) {
                   </div>
                 </div>
 
-                {/* Rota */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div className="flex items-start gap-3">
                     <div className="bg-blue-100 p-2 rounded-lg">
@@ -94,7 +92,6 @@ function CorridasUsuario({ produtos, tipoUsuario }: CorridasUsuarioProps) {
                   </div>
                 </div>
 
-                {/* Detalhes da corrida */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="flex items-center gap-2">
                     <CarIcon size={18} className="text-gray-600" />
@@ -137,7 +134,6 @@ function CorridasUsuario({ produtos, tipoUsuario }: CorridasUsuarioProps) {
                   </div>
                 </div>
 
-                {/* Informações adicionais */}
                 <div className="flex flex-wrap gap-2 mt-4">
                   <span className="bg-purple-100 text-purple-700 text-xs font-medium px-3 py-1 rounded-full">
                     {produto.categoria.placa}
@@ -150,9 +146,8 @@ function CorridasUsuario({ produtos, tipoUsuario }: CorridasUsuarioProps) {
                 </div>
               </div>
 
-              {/* Preço */}
               <div className="flex md:flex-col items-center md:items-end gap-2">
-                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white px-6 py-4 rounded-lg text-center shadow-lg">
+                <div className="bg-linear-to-br from-green-500 to-green-600 text-white px-6 py-4 rounded-lg text-center shadow-lg">
                   <p className="text-xs font-medium opacity-90 mb-1">PREÇO</p>
                   <p className="text-3xl font-bold">
                     R$ {produto.preco.toFixed(2)}

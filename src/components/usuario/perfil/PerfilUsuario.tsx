@@ -86,13 +86,12 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
 
         setLoading(true);
         try {
-            // Simular chamada API
+    
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
             const usuarioAtualizado: Usuario = {
                 ...usuario,
                 ...formData,
-                // Se a senha estiver vazia, manter a senha atual
                 senha: formData.senha || usuario.senha,
             };
 
@@ -139,7 +138,6 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Foto de perfil */}
                 <div className="md:col-span-1">
                     <div className="relative">
                         {previewFoto ? (
@@ -235,7 +233,6 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                     </div>
                 </div>
 
-                {/* Informações do perfil */}
                 <div className="md:col-span-2 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>

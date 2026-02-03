@@ -207,28 +207,29 @@ function FormCategoria() {
                             Cancelar
                         </button>
 
-                        <button
-                            type="submit"
-                                         className="
-              px-8 py-3
-              rounded-full
-              bg-pink-400
-              text-white
-              font-semibold
-              shadow-lg
-              hover:bg-pink-500
-              transition-all duration-300
-              transform hover:scale-105">
-                            {isLoading ?
-                                <ClipLoader
-                                color='#ffffff'
-                                size={24}
-                                /> : 
-                                <span>{id === undefined ? 'cadastrar': 'atualizar'}</span>
-                            }
+                       <button
+  type="submit"
+  disabled={isLoading}
+  className="
+    px-8 py-3
+    rounded-full
+    bg-pink-400
+    text-white
+    font-semibold
+    shadow-lg
+    hover:bg-pink-500
+    transition-all duration-300
+    transform hover:scale-105
+    disabled:bg-gray-400 disabled:cursor-not-allowed
+  "
+>
+  {isLoading ? (
+    <ClipLoader color="#ffffff" size={20} />
+  ) : (
+    id ? "Atualizar" : "Cadastrar"
+  )}
+</button>
 
-                            {isLoading ? "Salvando..." : "Salvar"}
-                        </button>
                     </div>
                 </form>
             </div>

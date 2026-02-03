@@ -41,6 +41,21 @@ function PerfilPage() {
     },
   };
 
+
+  useEffect(() => {
+    async function carregarUsuario() {
+      try {
+        await buscar('/usuarios/me', setUsuario, header);
+      } catch (error) {
+        console.error('Erro ao buscar usuário', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarUsuario();
+  }, []);
+
   const handleUpdateUsuario = async (usuarioAtualizado: Usuario) => {
     try {
       await atualizar('/usuarios/atualizar', usuarioAtualizado, () => {});
@@ -52,10 +67,12 @@ function PerfilPage() {
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
+
         <PerfilUsuario
           usuario={usuario}
           onUpdate={handleUpdateUsuario}
         />
+
         <CorridasUsuario
           produtos={usuario.produto ?? []}
           tipoUsuario={usuario.tipoUsuario}
