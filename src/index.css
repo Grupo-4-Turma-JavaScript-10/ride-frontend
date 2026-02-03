@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+  --color-custom-yellow: #FFF7AD;
+  --color-custom-pink: #FFA9F9;
+  --font-roboto: 'Roboto', sans-serif;
+}
+
 @layer base {
   :root {
     --color-custom-yellow: #fff7ad;
@@ -11,6 +17,7 @@
     font-family: var(--font-roboto);
   }
 }
+
 
 @layer utilities {
   .bg-gradient-custom {
