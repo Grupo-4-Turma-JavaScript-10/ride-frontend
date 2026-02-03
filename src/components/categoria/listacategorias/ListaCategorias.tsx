@@ -65,61 +65,65 @@ function ListaCategorias() {
     }
   }
 
-  return (
-    <>
-      {isLoading && <LoadingSpinner />}
-      
-      {!isLoading && (
-        <div className="min-h-screen bg-gray-100 py-12 px-6 flex justify-center">
-          <div className="w-full max-w-5xl">
-            <div className="flex items-center justify-between mb-10">
-              <h1 className="text-3xl font-bold text-gray-800">
-                Perfis de Veículo
-              </h1>
-              <button
-                onClick={() => navigate("/cadastrarcategoria")}
-                className="
-                  px-5 py-2.5
-                  rounded-xl
-                  bg-linear-to-br from-pink-300 to-pink-400
-                  hover:from-pink-400 hover:to-pink-500
-                  text-white font-medium
-                  shadow-md
-                  transition-all duration-300
-                  hover:scale-105 hover:shadow-lg
-                "
-              >
-                + Novo Veículo
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              {categorias.length === 0 && (
-                <div className="text-center my-8">
-                  <span className="text-lg text-gray-600 block">
-                    Nenhum veículo foi encontrado!
-                  </span>
-                  <button
-                    onClick={buscarCategorias}
-                    className="mt-4 text-pink-500 hover:text-pink-600 underline"
-                  >
-                    Tentar novamente
-                  </button>
-                </div>
-              )}
-              
-              {categorias.map((categoria) => (
-                <CardCategoria
-                  key={categoria.id}
-                  categoria={categoria}
-                />
-              ))}
-            </div>
+ return (
+  <>
+    {isLoading && <LoadingSpinner />}
+
+    {!isLoading && (
+      <div className="min-h-screen bg-gray-100 py-16 px-6 flex justify-center">
+        <div className="w-full max-w-5xl">
+
+          <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
+            <h1 className="text-4xl font-extrabold text-gray-800">
+              Perfis de Veículo
+            </h1>
+            <button
+              onClick={() => navigate("/cadastrarcategoria")}
+              className="
+                px-6 py-3
+                rounded-2xl
+                bg-linear-to-br from-pink-300 to-pink-400
+                hover:from-pink-400 hover:to-pink-500
+                text-white font-semibold
+                shadow-lg
+                transition-all duration-300
+                hover:scale-105 hover:shadow-xl
+              "
+            >
+              + Novo Veículo
+            </button>
           </div>
+
+          <div className="space-y-5">
+            {categorias.length === 0 && (
+              <div className="text-center my-12">
+                <span className="text-lg text-gray-600 block mb-3">
+                  Nenhum veículo foi encontrado!
+                </span>
+                <button
+                  onClick={buscarCategorias}
+                  className="text-pink-500 hover:text-pink-600 underline font-medium transition-colors duration-200"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            )}
+
+            {categorias.map((categoria) => (
+              <CardCategoria
+                key={categoria.id}
+                categoria={categoria}
+                className="transition-transform duration-300 hover:scale-102 hover:shadow-lg"
+              />
+            ))}
+          </div>
+
         </div>
-      )}
-    </>
-  );
+      </div>
+    )}
+  </>
+);
+
 }
 
 export default ListaCategorias;
