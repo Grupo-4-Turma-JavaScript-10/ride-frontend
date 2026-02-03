@@ -6,7 +6,7 @@ import type Produto from "../../../models/Produto";
 import { AuthContext } from "../../../contexts/AuthContext";
 
 interface CorridasUsuarioProps {
-  produtos: Produto[];
+  produtos?: Produto[];
   tipoUsuario: "PASSAGEIRO" | "MOTORISTA";
 }
 

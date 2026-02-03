@@ -106,18 +106,7 @@ export default function Cadastro() {
 
       await cadastrarUsuario(`/usuarios/cadastrar`, dadosCadastro, setUsuario);
       ToastAlerta('Usuário cadastrado com sucesso!', 'success');
-      
-      setUsuario({
-        id: 0,
-        nome: '',
-        usuario: '',
-        senha: '',
-        foto: '',
-        sexo: '',
-        data: '',
-        tipoUsuario: 'PASSAGEIRO'
-      });
-      setConfirmaSenha('');
+      navigate('/login');
 
     } catch (error: any) {
       const mensagemErro = error.response?.data?.message || 'Erro ao cadastrar o usuário!';
