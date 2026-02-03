@@ -61,13 +61,12 @@ function PerfilPage() {
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* Perfil do usuário */}
+
         <PerfilUsuario
           usuario={usuarioCompleto}
           onUpdate={handleUpdateUsuario}
         />
 
-        {/* Corridas do usuário */}
         <CorridasUsuario
           produtos={usuarioCompleto.produto}
           tipoUsuario={usuarioCompleto.tipoUsuario}
