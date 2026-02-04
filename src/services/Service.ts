@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:4000",
+  baseURL: "https://ride-backend-o0yt.onrender.com",
 });
 
 export const authHeader = (token: string) => ({
