@@ -6,9 +6,7 @@ import type Usuario from "../../models/Usuario";
 import { atualizar } from "../../services/Service";
 import { ToastAlerta } from "../../util/ToastAlerta";
 import { mapUsuarioLoginParaUsuario } from "../../util/mapUsuarioLoginParaUsuario";
-
 import PerfilUsuario from "../../components/usuario/perfil/PerfilUsuario";
-import CorridasUsuario from "../../components/usuario/corrida/CorridaUsuario";
 
 function PerfilPage() {
   const navigate = useNavigate();
@@ -65,11 +63,6 @@ function PerfilPage() {
         <PerfilUsuario
           usuario={usuarioCompleto}
           onUpdate={handleUpdateUsuario}
-        />
-
-        <CorridasUsuario
-          produtos={usuarioCompleto.produto}
-          tipoUsuario={usuarioCompleto.tipoUsuario}
         />
       </div>
 

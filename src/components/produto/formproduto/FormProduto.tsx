@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { atualizar, buscar, cadastrar } from "../../../services/Service";
 import { ToastAlerta } from "../../../util/ToastAlerta";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import type Produto from "../../../models/Produto";
 import type Categoria from "../../../models/Categoria";
 import { ClipLoader } from "react-spinners";
@@ -9,6 +9,7 @@ import { AuthContext } from "../../../contexts/AuthContext";
 
 function FormProduto() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const { usuario, handleLogout } = useContext(AuthContext);
   const token = usuario?.token || localStorage.getItem("token") || "";
@@ -66,8 +67,23 @@ function FormProduto() {
           ToastAlerta("Erro ao carregar produto.", "error");
         }
       });
+    } else if (location.state) {
+      // Preenche os campos com os dados vindos da Home
+      const { origem, destino, data } = location.state as any;
+      
+      setProduto(prev => ({
+        ...prev,
+        origem: origem || "",
+        destino: destino || "",
+        data: data || ""
+      }));
+
+      // Feedback visual para o usuário
+      if (origem || destino || data) {
+        ToastAlerta("Dados preenchidos da busca!", "info");
+      }
     }
-  }, [token, id]);
+  }, [token, id, location.state, handleLogout]);
 
   function atualizarEstado(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value, type } = e.target;
