@@ -34,6 +34,11 @@ interface AuthProvidersProps {
 
 export const AuthContext = createContext({} as AuthContextProps);
 
+const sanitizeTipoUsuario = (tipo: any): "MOTORISTA" | "PASSAGEIRO" | "" => {
+    if (tipo === "MOTORISTA" || tipo === "PASSAGEIRO") return tipo;
+    return "";
+};
+
 export function AuthProvider({ children }: AuthProvidersProps) {
     const navigate = useNavigate();
     
@@ -73,7 +78,7 @@ export function AuthProvider({ children }: AuthProvidersProps) {
             await login("/usuarios/logar", usuarioLogin, (usuarioRetornado: UsuarioLogin) => {
                 const usuarioCompleto = {
                     ...usuarioRetornado,
-                    tipoUsuario: usuarioRetornado.tipoUsuario || usuarioLogin.tipoUsuario || "",
+                    tipoUsuario: sanitizeTipoUsuario(usuarioRetornado.tipoUsuario || usuarioLogin.tipoUsuario),
                     senha: ""
                 };
                 
@@ -83,14 +88,13 @@ export function AuthProvider({ children }: AuthProvidersProps) {
                     id: usuarioRetornado.id,
                     nome: usuarioRetornado.nome,
                     usuario: usuarioRetornado.usuario,
-                    tipoUsuario: usuarioRetornado.tipoUsuario || usuarioLogin.tipoUsuario || "",
+                    tipoUsuario: sanitizeTipoUsuario(usuarioRetornado.tipoUsuario || usuarioLogin.tipoUsuario),
                     foto: usuarioRetornado.foto,
                     sexo: usuarioRetornado.sexo,
                     data: usuarioRetornado.data,
                     produto: usuarioRetornado.produto
                 }));
                 
-                // Se tipoUsuario não veio, buscar perfil completo
                 if (!usuarioRetornado.tipoUsuario) {
                     fetch(
                         `${import.meta.env.VITE_API_URL}/usuarios/${usuarioRetornado.id}`,
@@ -100,14 +104,14 @@ export function AuthProvider({ children }: AuthProvidersProps) {
                     .then(perfil => {
                         const usuarioAtualizado = {
                             ...usuarioCompleto,
-                            tipoUsuario: perfil.tipoUsuario || usuarioLogin.tipoUsuario || ""
+                            tipoUsuario: sanitizeTipoUsuario(perfil.tipoUsuario || usuarioLogin.tipoUsuario)
                         };
                         setUsuario(usuarioAtualizado);
                         localStorage.setItem('usuario', JSON.stringify({
                             id: perfil.id,
                             nome: perfil.nome,
                             usuario: perfil.usuario,
-                            tipoUsuario: perfil.tipoUsuario || usuarioLogin.tipoUsuario || "",
+                            tipoUsuario: sanitizeTipoUsuario(perfil.tipoUsuario || usuarioLogin.tipoUsuario),
                             foto: perfil.foto,
                             sexo: perfil.sexo,
                             data: perfil.data,
@@ -130,13 +134,18 @@ export function AuthProvider({ children }: AuthProvidersProps) {
 
     function atualizarUsuario(usuarioAtualizado: Partial<UsuarioLogin>) {
         const novoUsuario = { ...usuario, ...usuarioAtualizado };
+        
+        if (novoUsuario.tipoUsuario) {
+            novoUsuario.tipoUsuario = sanitizeTipoUsuario(novoUsuario.tipoUsuario);
+        }
+        
         setUsuario(novoUsuario);
         
         localStorage.setItem('usuario', JSON.stringify({
             id: novoUsuario.id,
             nome: novoUsuario.nome,
             usuario: novoUsuario.usuario,
-            tipoUsuario: novoUsuario.tipoUsuario,
+            tipoUsuario: novoUsuario.tipoUsuario || "",
             foto: novoUsuario.foto,
             sexo: novoUsuario.sexo,
             data: novoUsuario.data,
