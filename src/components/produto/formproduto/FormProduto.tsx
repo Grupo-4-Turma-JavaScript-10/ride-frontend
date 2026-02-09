@@ -137,7 +137,7 @@ function FormProduto() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50 py-8 px-4">
+    <div className="min-h-screen bg-linear-to-br from-pink-50 via-white to-purple-50 py-8 px-4">
       <div className="max-w-5xl mx-auto">
 
         <div className="mb-8">
@@ -151,7 +151,7 @@ function FormProduto() {
             <span className="font-medium">Voltar</span>
           </button>
           
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-linear-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
             {id ? "Editar Carona" : "Nova Carona"}
           </h1>
           <p className="text-gray-600 mt-2">
@@ -164,7 +164,7 @@ function FormProduto() {
             
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                <div className="w-1 h-6 bg-gradient-to-b from-pink-500 to-purple-500 rounded-full"></div>
+                <div className="w-1 h-6 bg-linear-to-b from-pink-500 to-purple-500 rounded-full"></div>
                 Informações Básicas
               </h2>
               
@@ -237,7 +237,7 @@ function FormProduto() {
 
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                <div className="w-1 h-6 bg-gradient-to-b from-pink-500 to-purple-500 rounded-full"></div>
+                <div className="w-1 h-6 bg-linear-to-b from-pink-500 to-purple-500 rounded-full"></div>
                 Informações da Rota
               </h2>
               
@@ -307,7 +307,7 @@ function FormProduto() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <div className="bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl p-6 shadow-lg">
+                  <div className="bg-linear-to-r from-pink-500 to-purple-500 rounded-2xl p-6 shadow-lg">
                     <label className="block text-sm font-semibold text-white mb-3 flex items-center gap-2">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -335,7 +335,7 @@ function FormProduto() {
 
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                <div className="w-1 h-6 bg-gradient-to-b from-pink-500 to-purple-500 rounded-full"></div>
+                <div className="w-1 h-6 bg-linear-to-b from-pink-500 to-purple-500 rounded-full"></div>
                 Veículo e Preferências
               </h2>
               
@@ -413,7 +413,7 @@ function FormProduto() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-10 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold shadow-lg hover:shadow-xl hover:from-pink-600 hover:to-purple-600 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                className="px-10 py-3 rounded-xl bg-linear-to-r from-pink-500 to-purple-500 text-white font-semibold shadow-lg hover:shadow-xl hover:from-pink-600 hover:to-purple-600 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
               >
                 {isLoading ? (
                   <>

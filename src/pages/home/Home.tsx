@@ -122,7 +122,7 @@ function Home() {
       <section className="font-roboto flex bg-cover sm:bg-center bg-position-[65%_35%] w-full min-h-110 relative" style={{
         backgroundImage: `url(${homeImg})`
       }}>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60 sm:bg-gradient-to-r sm:from-black/50 sm:via-transparent sm:to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/20 to-black/60 sm:bg-linear-to-r sm:from-black/50 sm:via-transparent sm:to-transparent"></div>
 
         <div className="flex flex-col w-full relative z-10">
           <div className="mt-12 p-5 sm:p-0 mx-auto sm:ml-12 sm:mt-20">
@@ -183,7 +183,7 @@ function Home() {
 
                 <button
                   type="submit"
-                  className="w-full sm:w-[calc(50%-0.625rem)] border-2 border-transparent rounded-lg p-2 font-regular bg-gradient-to-r from-black to-black font-bold hover:shadow-lg transition-all transform hover:scale-105"
+                  className="w-full sm:w-[calc(50%-0.625rem)] border-2 border-transparent rounded-lg p-2 font-regular bg-linear-to-r from-black to-black font-bold hover:shadow-lg transition-all transform hover:scale-105"
                 >
                   <p className="text-white text-lg">
                     Buscar Viagem
@@ -205,7 +205,7 @@ function Home() {
               </button>
             </div>
 
-            <p className="invisible bg-gradient-to-r from-pink-500 to-pink-500 p-3 rounded-lg mb-5 ml-5 sm:ml-20 max-w-150 sm:w-fit text-center text-white font-bold mt-5 text-xl self-start shadow-lg">
+            <p className="invisible bg-linear-to-r from-pink-500 to-pink-500 p-3 rounded-lg mb-5 ml-5 sm:ml-20 max-w-150 sm:w-fit text-center text-white font-bold mt-5 text-xl self-start shadow-lg">
               Liberdade para ser e viajar com segurança
             </p>
           </section>
@@ -213,7 +213,7 @@ function Home() {
       </section>
 
       <section className="font-roboto flex flex-col items-center sm:-translate-y-10 -translate-y-3 px-5">
-        <div className="flex gap-5 sm:flex-row flex-col items-start justify-around w-[90%] max-w-7xl bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 transform-translate shadow-2xl border border-gray-100">
+        <div className="flex gap-5 sm:flex-row flex-col items-start justify-around w-[90%] max-w-7xl bg-linear-to-br from-gray-50 to-white rounded-2xl p-6 transform-translate shadow-2xl border border-gray-100">
           <div className="flex gap-4 items-center sm:max-w-72 hover:scale-105 transition-transform">
             <div className="bg-custom-yellow/20 rounded-full p-3">
               <img src={money} alt="Dinheiro" className="h-12 aspect-square" />
@@ -259,7 +259,7 @@ function Home() {
             {funcionamento.map((texto, index) => (
               <div key={index} className="flex flex-col sm:w-80 w-full gap-5 items-center bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-gray-100 hover:scale-105 transform">
                 <div className="relative">
-                  <div className="absolute -top-4 -left-4 bg-gradient-to-br from-custom-pink to-custom-yellow text-white rounded-full w-12 h-12 flex items-center justify-center text-2xl font-bold shadow-lg">
+                  <div className="absolute -top-4 -left-4 bg-linear-to-br from-custom-pink to-custom-yellow text-white rounded-full w-12 h-12 flex items-center justify-center text-2xl font-bold shadow-lg">
                     {index + 1}
                   </div>
                   <img src={texto.img} alt="" className="border-4 border-gray-100 rounded-xl shadow-md" />
@@ -271,7 +271,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50 py-16 px-5">
+      <section className="bg-linear-to-br from-purple-50 via-pink-50 to-yellow-50 py-16 px-5">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-center mb-4">
             Por que escolher o <span className="text-custom-pink">VELO</span>?
@@ -294,7 +294,7 @@ function Home() {
       <section className="py-16 px-5">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-center mb-4">
-            Benefícios que fazem a <span className="text-custom-yellow">diferença</span>
+            Benefícios que fazem a <span className="text-custom-pink">diferença</span>
           </h2>
           <p className="text-center text-gray-600 mb-12 text-lg">
             Recursos pensados para sua segurança e conforto
@@ -302,7 +302,7 @@ function Home() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {beneficios.map((beneficio, index) => (
-              <div key={index} className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-md hover:shadow-lg transition-all border border-gray-100 hover:scale-105 transform">
+              <div key={index} className="bg-linear-to-br from-white to-gray-50 rounded-xl p-6 shadow-md hover:shadow-lg transition-all border border-gray-100 hover:scale-105 transform">
                 <div className="text-4xl mb-3">{beneficio.icone}</div>
                 <h3 className="text-lg font-bold mb-2 text-gray-800">{beneficio.titulo}</h3>
                 <p className="text-gray-600 text-sm">{beneficio.texto}</p>
@@ -312,7 +312,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="bg-gradient-to-br from-gray-900 to-gray-800 py-16 px-5">
+      <section className="bg-linear-to-br from-gray-900 to-gray-800 py-16 px-5">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-center mb-4 text-white">
             O que dizem nossos <span className="text-custom-yellow">viajantes</span>
@@ -337,7 +337,7 @@ function Home() {
         </div>
       </section>
 {!isAuthenticated && (
-      <section className="bg-gradient-to-r from-custom-pink to-custom-yellow py-16 px-5">
+      <section className="bg-linear-to-r from-custom-pink to-custom-yellow py-16 px-5">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl sm:text-5xl font-extrabold text-white mb-6">
             Pronto para viajar com liberdade?
