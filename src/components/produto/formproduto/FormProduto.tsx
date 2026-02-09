@@ -208,7 +208,7 @@ function FormProduto() {
                     <input
                       type="number"
                       name="preco"
-                      value={produto.preco}
+                      value={produto.preco === 0 ? '' : produto.preco}
                       onChange={atualizarEstado}
                       placeholder="0,00"
                       step="0.01"
@@ -279,7 +279,7 @@ function FormProduto() {
                   <input
                     type="number"
                     name="distanciaKm"
-                    value={produto.distanciaKm}
+                    value={produto.distanciaKm === 0 ? '' : produto.distanciaKm}
                     onChange={atualizarEstado}
                     placeholder="0"
                     step="0.1"
@@ -296,7 +296,7 @@ function FormProduto() {
                   <input
                     type="number"
                     name="velocidadeMediaKmh"
-                    value={produto.velocidadeMediaKmh}
+                    value={produto.velocidadeMediaKmh === 0 ? '' : produto.velocidadeMediaKmh}
                     onChange={atualizarEstado}
                     placeholder="0"
                     step="1"
@@ -324,7 +324,7 @@ function FormProduto() {
                           <span className="text-2xl text-black text-opacity-70">-- min</span>
                         )}
                       </div>
-                      <p className="text-center text-white text-opacity-90 text-sm mt-2">
+                      <p className="text-center text-black text-opacity-90 text-sm mt-2">
                         Calculado automaticamente
                       </p>
                     </div>
