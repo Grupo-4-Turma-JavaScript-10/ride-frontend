@@ -25,7 +25,7 @@ function Navbar() {
     { label: "Home", path: "/home" },
     ...(isAuthenticated
       ? [
-          { label: "Dashboard", path: "/dashboard" },
+          { label: "Meu Painel", path: "/dashboard" },
           { label: "Viagem", path: "/produtos" },
           ...(isMotorista ? [{ label: "Veículos", path: "/categorias" }] : []),
         ]

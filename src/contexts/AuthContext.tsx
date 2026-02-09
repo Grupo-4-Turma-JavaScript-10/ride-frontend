@@ -12,6 +12,8 @@ export interface UsuarioLogin {
     senha: string;
     foto: string;
     token: string;
+    sexo?: string;
+    data?: string;
     produto?: Produto[];
 }
 
@@ -32,6 +34,11 @@ interface AuthProvidersProps {
 
 export const AuthContext = createContext({} as AuthContextProps);
 
+const sanitizeTipoUsuario = (tipo: any): "MOTORISTA" | "PASSAGEIRO" | "" => {
+    if (tipo === "MOTORISTA" || tipo === "PASSAGEIRO") return tipo;
+    return "";
+};
+
 export function AuthProvider({ children }: AuthProvidersProps) {
     const navigate = useNavigate();
     
@@ -43,6 +50,8 @@ export function AuthProvider({ children }: AuthProvidersProps) {
         senha: "",
         foto: "",
         token: "",
+        sexo: "",
+        data: "",
         produto: []
     });
     
@@ -54,7 +63,8 @@ export function AuthProvider({ children }: AuthProvidersProps) {
         if (token && usuarioSalvo) {
             try {
                 const usuarioData = JSON.parse(usuarioSalvo);
-                setUsuario({ ...usuarioData, token, senha: "" });
+                const usuarioComToken = { ...usuarioData, token, senha: "" };
+                setUsuario(usuarioComToken);
             } catch {
                 localStorage.removeItem('token');
                 localStorage.removeItem('usuario');
@@ -63,17 +73,13 @@ export function AuthProvider({ children }: AuthProvidersProps) {
     }, []);
 
     async function handleLogin(usuarioLogin: UsuarioLogin) {
-        if (!usuarioLogin.tipoUsuario) {
-            ToastAlerta('Selecione se você é motorista ou passageiro!', 'error');
-            return;
-        }
         setIsLoading(true);
         try {
             await login("/usuarios/logar", usuarioLogin, (usuarioRetornado: UsuarioLogin) => {
                 const usuarioCompleto = {
                     ...usuarioRetornado,
-                    tipoUsuario: usuarioLogin.tipoUsuario, 
-                    senha: "" 
+                    tipoUsuario: sanitizeTipoUsuario(usuarioRetornado.tipoUsuario || usuarioLogin.tipoUsuario),
+                    senha: ""
                 };
                 
                 setUsuario(usuarioCompleto);
@@ -82,10 +88,39 @@ export function AuthProvider({ children }: AuthProvidersProps) {
                     id: usuarioRetornado.id,
                     nome: usuarioRetornado.nome,
                     usuario: usuarioRetornado.usuario,
-                    tipoUsuario: usuarioLogin.tipoUsuario,
+                    tipoUsuario: sanitizeTipoUsuario(usuarioRetornado.tipoUsuario || usuarioLogin.tipoUsuario),
                     foto: usuarioRetornado.foto,
+                    sexo: usuarioRetornado.sexo,
+                    data: usuarioRetornado.data,
                     produto: usuarioRetornado.produto
                 }));
+                
+                if (!usuarioRetornado.tipoUsuario) {
+                    fetch(
+                        `${import.meta.env.VITE_API_URL}/usuarios/${usuarioRetornado.id}`,
+                        { headers: { Authorization: usuarioRetornado.token } }
+                    )
+                    .then(res => res.json())
+                    .then(perfil => {
+                        const usuarioAtualizado = {
+                            ...usuarioCompleto,
+                            tipoUsuario: sanitizeTipoUsuario(perfil.tipoUsuario || usuarioLogin.tipoUsuario)
+                        };
+                        setUsuario(usuarioAtualizado);
+                        localStorage.setItem('usuario', JSON.stringify({
+                            id: perfil.id,
+                            nome: perfil.nome,
+                            usuario: perfil.usuario,
+                            tipoUsuario: sanitizeTipoUsuario(perfil.tipoUsuario || usuarioLogin.tipoUsuario),
+                            foto: perfil.foto,
+                            sexo: perfil.sexo,
+                            data: perfil.data,
+                            produto: perfil.produto
+                        }));
+                    })
+                    .catch(erro => console.error('Erro ao buscar perfil:', erro));
+                }
+                
                 ToastAlerta('Login realizado com sucesso!', 'success');
                 navigate("/home");
             });
@@ -99,14 +134,21 @@ export function AuthProvider({ children }: AuthProvidersProps) {
 
     function atualizarUsuario(usuarioAtualizado: Partial<UsuarioLogin>) {
         const novoUsuario = { ...usuario, ...usuarioAtualizado };
+        
+        if (novoUsuario.tipoUsuario) {
+            novoUsuario.tipoUsuario = sanitizeTipoUsuario(novoUsuario.tipoUsuario);
+        }
+        
         setUsuario(novoUsuario);
         
         localStorage.setItem('usuario', JSON.stringify({
             id: novoUsuario.id,
             nome: novoUsuario.nome,
             usuario: novoUsuario.usuario,
-            tipoUsuario: novoUsuario.tipoUsuario,
+            tipoUsuario: novoUsuario.tipoUsuario || "",
             foto: novoUsuario.foto,
+            sexo: novoUsuario.sexo,
+            data: novoUsuario.data,
             produto: novoUsuario.produto
         }));
     }
@@ -120,6 +162,8 @@ export function AuthProvider({ children }: AuthProvidersProps) {
             senha: "",
             foto: "",
             token: "",
+            sexo: "",
+            data: "",
             produto: []
         });
         localStorage.removeItem('token');

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -15,13 +15,16 @@ function PerfilPage() {
 
 
   useEffect(() => {
-    if (token === "") {
-      ToastAlerta("Você precisa estar logado", "info");
+    if (!isAuthenticated || token === "") {
+      ToastAlerta("Voc� precisa estar logado", "info");
       navigate("/login");
     }
-  }, [token, navigate]);
+  }, [token, isAuthenticated, navigate]);
 
-  const usuarioCompleto: Usuario = mapUsuarioLoginParaUsuario(usuario);
+  const usuarioCompleto: Usuario = useMemo(
+    () => mapUsuarioLoginParaUsuario(usuario),
+    [usuario.id, usuario.nome, usuario.usuario, usuario.tipoUsuario, usuario.foto, usuario.sexo, usuario.data, usuario.produto]
+  );
 
 
   async function handleUpdateUsuario(usuarioAtualizado: Usuario) {
