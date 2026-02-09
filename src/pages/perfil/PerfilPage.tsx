@@ -23,7 +23,7 @@ function PerfilPage() {
 
   const usuarioCompleto: Usuario = useMemo(
     () => mapUsuarioLoginParaUsuario(usuario),
-    [usuario.id, usuario.nome, usuario.usuario, usuario.tipoUsuario, usuario.foto, usuario.sexo, usuario.data]
+    [usuario.id, usuario.nome, usuario.usuario, usuario.tipoUsuario, usuario.foto, usuario.sexo, usuario.data, usuario.produto]
   );
 
 

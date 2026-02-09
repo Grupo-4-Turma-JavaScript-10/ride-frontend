@@ -64,32 +64,6 @@ export default function Login() {
         </h2>
 
         <form onSubmit={login} className="flex flex-col gap-4">
-          
-          <div className="flex gap-2 bg-stone-100/80 p-1 rounded-xl backdrop-blur-sm">
-            <button
-              type="button"
-              onClick={() => setUsuarioLogin({ ...usuarioLogin, tipoUsuario: 'PASSAGEIRO' })}
-              className={`flex-1 py-2 rounded-lg font-medium transition ${
-                usuarioLogin.tipoUsuario === "PASSAGEIRO"
-                  ? "bg-white shadow text-gray-900"
-                  : "text-stone-500 hover:text-gray-800"
-              }`}
-            >
-              Passageiro
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setUsuarioLogin({ ...usuarioLogin, tipoUsuario: 'MOTORISTA' })}
-              className={`flex-1 py-2 rounded-lg font-medium transition ${
-                usuarioLogin.tipoUsuario === "MOTORISTA"
-                  ? "bg-white shadow text-gray-900"
-                  : "text-stone-500 hover:text-gray-800"
-              }`}
-            >
-              Motorista
-            </button>
-          </div>
 
           <input
             type="text"

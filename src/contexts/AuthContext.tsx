@@ -12,6 +12,8 @@ export interface UsuarioLogin {
     senha: string;
     foto: string;
     token: string;
+    sexo?: string;
+    data?: string;
     produto?: Produto[];
 }
 
@@ -43,6 +45,8 @@ export function AuthProvider({ children }: AuthProvidersProps) {
         senha: "",
         foto: "",
         token: "",
+        sexo: "",
+        data: "",
         produto: []
     });
     
@@ -120,6 +124,8 @@ export function AuthProvider({ children }: AuthProvidersProps) {
             senha: "",
             foto: "",
             token: "",
+            sexo: "",
+            data: "",
             produto: []
         });
         localStorage.removeItem('token');
