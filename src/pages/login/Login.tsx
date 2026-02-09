@@ -18,7 +18,7 @@ export default function Login() {
     id: 0,
     nome: "",
     usuario: "",
-    tipoUsuario: "PASSAGEIRO", 
+    tipoUsuario: "",
     senha: "",
     foto: "",
     token: ""

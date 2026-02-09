@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Footer from "./components/footer/footer";
+import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import Cadastro from "./pages/cadastro/Cadastro";
@@ -22,6 +23,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <ToastContainer />
           <Navbar />
