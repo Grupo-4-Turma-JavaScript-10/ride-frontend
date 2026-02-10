@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
 import { UserIcon, CameraIcon, X, CheckIcon } from '@phosphor-icons/react';
-import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import type Usuario from '../../../models/Usuario';
 import { ToastAlerta } from '../../../util/ToastAlerta';
@@ -29,12 +28,13 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
     
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showFotoModal, setShowFotoModal] = useState(false);
     const [formData, setFormData] = useState<Omit<Usuario, 'id' | 'produto'>>({
         nome: usuario.nome,
         usuario: usuario.usuario,
         senha: '',
         foto: usuario.foto,
-        sexo: usuario.sexo,
+        sexo: usuario.sexo || '',
         data: usuario.data,
         tipoUsuario: usuario.tipoUsuario,
     });
@@ -47,7 +47,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
             usuario: usuario.usuario,
             senha: '',
             foto: usuario.foto,
-            sexo: usuario.sexo,
+            sexo: usuario.sexo || '',
             data: usuario.data,
             tipoUsuario: usuario.tipoUsuario,
         });
@@ -119,11 +119,14 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                     });
                     
                     onUpdate(dados);
+                    
+                    
                 },
                 authHeader(usuarioContext.token)
             );
 
-            ToastAlerta('Perfil atualizado com sucesso!', 'sucesso');
+
+            
             setIsEditing(false);
             setFormData((prev) => ({ ...prev, senha: '' }));
             setConfirmarSenha('');
@@ -141,7 +144,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
             usuario: usuario.usuario,
             senha: '',
             foto: usuario.foto,
-            sexo: usuario.sexo,
+            sexo: usuario.sexo || '',
             data: usuario.data,
             tipoUsuario: usuario.tipoUsuario,
         });
@@ -184,70 +187,12 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                         )}
 
                         {isEditing && (
-                            <Popup
-                                trigger={
-                                    <button className="absolute bottom-2 right-2 bg-black hover:bg-gray-800 text-white p-3 rounded-full shadow-lg transition-colors">
-                                        <CameraIcon size={20} />
-                                    </button>
-                                }
-                                modal
-                                nested
+                            <button 
+                                onClick={() => setShowFotoModal(true)}
+                                className="absolute bottom-2 right-2 bg-black hover:bg-gray-800 text-white p-3 rounded-full shadow-lg transition-colors"
                             >
-                                {((close: () => void) => (
-                                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-xl font-bold text-gray-800">
-                                                Alterar Foto
-                                            </h3>
-                                            <button
-                                                onClick={close}
-                                                className="text-gray-500 hover:text-gray-700"
-                                            >
-                                                <X size={24} />
-                                            </button>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    URL da Foto
-                                                </label>
-                                                <input
-                                                    type="url"
-                                                    value={formData.foto}
-                                                    onChange={handleFotoChange}
-                                                    placeholder="https://exemplo.com/foto.jpg"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                />
-                                            </div>
-
-                                            {previewFoto && (
-                                                <div className="mt-4">
-                                                    <p className="text-sm font-medium text-gray-700 mb-2">
-                                                        Preview:
-                                                    </p>
-                                                    <img
-                                                        src={previewFoto}
-                                                        alt="Preview"
-                                                        className="w-full aspect-square object-cover rounded-lg"
-                                                        onError={(e) => {
-                                                            (e.target as HTMLImageElement).src =
-                                                                'https://via.placeholder.com/300x300?text=URL+Inválida';
-                                                        }}
-                                                    />
-                                                </div>
-                                            )}
-
-                                            <button
-                                                onClick={close}
-                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
-                                            >
-                                                Confirmar
-                                            </button>
-                                        </div>
-                                    </div>
-                                )) as unknown as React.ReactNode}
-                            </Popup>
+                                <CameraIcon size={20} />
+                            </button>
                         )}
                     </div>
 
@@ -309,6 +254,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                                     : 'bg-gray-100 cursor-not-allowed'
                                     }`}
                             >
+                                <option value="">Selecione...</option>
                                 {GENEROS.map((genero) => (
                                     <option key={genero} value={genero}>{genero}</option>
                                 ))}
@@ -396,6 +342,70 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                     )}
                 </div>
             </div>
+
+
+            {showFotoModal && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    onClick={() => setShowFotoModal(false)}
+                >
+                    <div 
+                        className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">
+                                Alterar Foto
+                            </h3>
+                            <button
+                                onClick={() => setShowFotoModal(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    URL da Foto
+                                </label>
+                                <input
+                                    type="url"
+                                    value={formData.foto}
+                                    onChange={handleFotoChange}
+                                    placeholder="https://exemplo.com/foto.jpg"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+
+                            {previewFoto && (
+                                <div className="mt-4">
+                                    <p className="text-sm font-medium text-gray-700 mb-2">
+                                        Preview:
+                                    </p>
+                                    <img
+                                        src={previewFoto}
+                                        alt="Preview"
+                                        className="w-full aspect-square object-cover rounded-lg"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).src =
+                                                'https://via.placeholder.com/300x300?text=URL+Inválida';
+                                        }}
+                                    />
+                                </div>
+                            )}
+
+                            <button
+                                onClick={() => setShowFotoModal(false)}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
+                            >
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
