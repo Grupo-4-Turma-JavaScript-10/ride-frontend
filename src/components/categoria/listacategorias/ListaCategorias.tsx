@@ -51,7 +51,7 @@ function ListaCategorias() {
         }
       };
       
-      await buscar("/categorias", setCategorias, header);
+      await buscar("/categorias/meuscarros", setCategorias, header);
       
     } catch (error: any) {
       if (error.toString().includes("401") || error.response?.status === 401) {
