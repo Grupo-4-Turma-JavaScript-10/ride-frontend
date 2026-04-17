@@ -52,7 +52,7 @@ export default function Login() {
       <div className="absolute w-150 h-150 bg-yellow-200/20 rounded-full blur-3xl -top-40 -left-40" />
       <div className="absolute w-150 h-150 bg-pink-200/20 rounded-full blur-3xl -bottom-40 -right-40" />
 
-      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white/85 backdrop-blur-md border border-white/60 shadow-lg p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl">
+      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white/85 backdrop-blur-md border border-white/60 shadow-lg p-8 transition-all duration-500 hover:shadow-xl">
 
         <h2 className="text-xl font-semibold text-gray-800 text-center mb-6 tracking-tight">
           Entrar
@@ -67,7 +67,7 @@ export default function Login() {
             onChange={atualizarEstado}
             required
             disabled={contextLoading}
-            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md focus:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           />
 
           <input
@@ -78,7 +78,7 @@ export default function Login() {
             onChange={atualizarEstado}
             required
             disabled={contextLoading}
-            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md focus:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           />
 
           <button
@@ -88,7 +88,7 @@ export default function Login() {
               bg-linear-to-br from-yellow-200 via-pink-200 to-rose-200
               shadow-md transition-all duration-300
               hover:from-amber-300 hover:via-orange-200 hover:to-rose-300
-              hover:-translate-y-1 hover:shadow-lg active:scale-95
+              hover:shadow-lg active:scale-95
               disabled:opacity-70 disabled:cursor-not-allowed
             `}
           >

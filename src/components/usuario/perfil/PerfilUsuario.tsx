@@ -8,7 +8,7 @@ import { atualizar, authHeader } from '../../../services/Service';
 
 interface PerfilUsuarioProps {
     usuario: Usuario;
-    onUpdate: (usuarioAtualizado: Usuario) => void;
+    onUpdate?: (usuarioAtualizado: Usuario) => void;
 }
 
 const GENEROS = [
@@ -25,7 +25,7 @@ const GENEROS = [
 
 function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
     const { usuario: usuarioContext, atualizarUsuario } = useContext(AuthContext);
-    
+
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showFotoModal, setShowFotoModal] = useState(false);
@@ -41,35 +41,32 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
     const [previewFoto, setPreviewFoto] = useState<string>(usuario.foto);
     const [confirmarSenha, setConfirmarSenha] = useState('');
 
+    // ✅ Só sincroniza quando NÃO está editando, evitando reset durante edição
     useEffect(() => {
-        setFormData({
-            nome: usuario.nome,
-            usuario: usuario.usuario,
-            senha: '',
-            foto: usuario.foto,
-            sexo: usuario.sexo || '',
-            data: usuario.data,
-            tipoUsuario: usuario.tipoUsuario,
-        });
-        setPreviewFoto(usuario.foto);
-    }, [usuario]);
+        if (!isEditing) {
+            setFormData({
+                nome: usuario.nome,
+                usuario: usuario.usuario,
+                senha: '',
+                foto: usuario.foto,
+                sexo: usuario.sexo || '',
+                data: usuario.data,
+                tipoUsuario: usuario.tipoUsuario,
+            });
+            setPreviewFoto(usuario.foto);
+        }
+    }, [usuario.id]); // ✅ Depende só do ID, não do objeto inteiro
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setFormData((prev) => ({
-            ...prev,
-            foto: value,
-        }));
+        setFormData((prev) => ({ ...prev, foto: value }));
         setPreviewFoto(value);
     };
 
@@ -78,22 +75,18 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
             ToastAlerta('O nome é obrigatório', 'erro');
             return false;
         }
-
         if (!formData.usuario.trim()) {
             ToastAlerta('O nome de usuário é obrigatório', 'erro');
             return false;
         }
-
         if (formData.senha && formData.senha !== confirmarSenha) {
             ToastAlerta('As senhas não coincidem', 'erro');
             return false;
         }
-
         if (formData.senha && formData.senha.length < 6) {
             ToastAlerta('A senha deve ter no mínimo 6 caracteres', 'erro');
             return false;
         }
-
         return true;
     };
 
@@ -108,25 +101,26 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                 senha: formData.senha || usuario.senha,
             };
 
+            // ✅ Uma única chamada ao atualizar
             await atualizar(
                 `/usuarios/atualizar`,
                 usuarioAtualizado,
                 (dados: Usuario) => {
+                    // ✅ Atualiza o contexto global
                     atualizarUsuario({
                         nome: dados.nome,
                         usuario: dados.usuario,
-                        foto: dados.foto
+                        foto: dados.foto,
                     });
-                    
-                    onUpdate(dados);
-                    
-                    
+
+                    // ✅ Notifica o pai se necessário (opcional)
+                    onUpdate?.(dados);
                 },
                 authHeader(usuarioContext.token)
             );
 
-
-            
+            // ✅ Toast só em um lugar
+            ToastAlerta('Perfil atualizado com sucesso!', 'sucesso');
             setIsEditing(false);
             setFormData((prev) => ({ ...prev, senha: '' }));
             setConfirmarSenha('');
@@ -187,7 +181,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                         )}
 
                         {isEditing && (
-                            <button 
+                            <button
                                 onClick={() => setShowFotoModal(true)}
                                 className="absolute bottom-2 right-2 bg-black hover:bg-gray-800 text-white p-3 rounded-full shadow-lg transition-colors"
                             >
@@ -343,20 +337,17 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                 </div>
             </div>
 
-
             {showFotoModal && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
                     onClick={() => setShowFotoModal(false)}
                 >
-                    <div 
+                    <div
                         className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold text-gray-800">
-                                Alterar Foto
-                            </h3>
+                            <h3 className="text-xl font-bold text-gray-800">Alterar Foto</h3>
                             <button
                                 onClick={() => setShowFotoModal(false)}
                                 className="text-gray-500 hover:text-gray-700"
@@ -381,9 +372,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
 
                             {previewFoto && (
                                 <div className="mt-4">
-                                    <p className="text-sm font-medium text-gray-700 mb-2">
-                                        Preview:
-                                    </p>
+                                    <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
                                     <img
                                         src={previewFoto}
                                         alt="Preview"
