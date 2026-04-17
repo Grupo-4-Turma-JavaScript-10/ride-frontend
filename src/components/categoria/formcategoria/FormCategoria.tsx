@@ -101,18 +101,18 @@ function FormCategoria() {
         setIsLoading(false);
     }
 
-return (
-  <div className="flex justify-center py-16 bg-linear-to-b from-gray-100 via-gray-200 to-gray-300 min-h-screen">
+  return (
+  <div className="flex justify-center items-start py-16 bg-linear-to-b from-pink-50 via-purple-50 to-blue-50 min-h-screen">
     <div
       className="
         w-full max-w-4xl
         rounded-3xl
         shadow-2xl
         p-12
-        bg-linear-to-r from-yellow-200 via-pink-200 to-pink-300
-        animate-fadeInUp
-        border border-gray-100
+        bg-linear-to-r from-yellow-200 via-pink-200 to-pink-300/80
         backdrop-blur-sm
+        border border-pink-100
+        animate-fadeInUp
       "
     >
       <form onSubmit={gerarNovaCategoria}>
@@ -121,43 +121,167 @@ return (
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {[
-            { label: "Carro", name: "carro", delay: 100 },
-            { label: "Fabricante", name: "fabricante", delay: 200 },
-            { label: "Modelo", name: "modelo", delay: 300 },
-            { label: "Ano", name: "ano", delay: 400 },
-            { label: "Cor", name: "cor", delay: 500 },
-            { label: "Placa", name: "placa", delay: 600 },
-          ].map((field) => (
-            <div
-              key={field.name}
-              className={`animate-fadeInUp delay-${field.delay}`}
-            >
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {field.label}
-              </label>
-              <input
-                type="text"
-                name={field.name}
-                value={categoria[field.name] || ""}
-                onChange={atualizarEstado}
-                placeholder={`Digite o ${field.label.toLowerCase()}`}
-                className="
-                  w-full
-                  rounded-3xl
-                  border border-gray-300
-                  bg-white/60 backdrop-blur-sm
-                  p-4
-                  focus:ring-2 focus:ring-pink-300 focus:border-pink-300
-                  outline-none
-                  shadow-md
-                  transition-all duration-300
-                  placeholder-gray-400
-                  hover:shadow-lg
-                "
-              />
-            </div>
-          ))}
+          <div className="animate-fadeInUp delay-100">
+            <label className="block text-sm font-medium text-gray-800 mb-2">
+              Carro
+            </label>
+            <input
+              type="text"
+              name="carro"
+              value={categoria.carro || ""}
+              onChange={atualizarEstado}
+              placeholder="Digite o carro"
+              className="
+                w-full
+                rounded-3xl
+                border border-pink-300
+                bg-white/60
+                backdrop-blur-sm
+                p-4
+                focus:ring-2 focus:ring-pink-400 focus:border-pink-400
+                outline-none
+                shadow-md
+                transition-all duration-300
+                placeholder-gray-500
+                hover:shadow-lg
+              "
+            />
+          </div>
+
+          <div className="animate-fadeInUp delay-200">
+            <label className="block text-sm font-medium text-gray-800 mb-2">
+              Fabricante
+            </label>
+            <input
+              type="text"
+              name="fabricante"
+              value={categoria.fabricante || ""}
+              onChange={atualizarEstado}
+              placeholder="Digite o fabricante"
+              className="
+                w-full
+                rounded-3xl
+                border border-pink-300
+                bg-white/60
+                backdrop-blur-sm
+                p-4
+                focus:ring-2 focus:ring-pink-400 focus:border-pink-400
+                outline-none
+                shadow-md
+                transition-all duration-300
+                placeholder-gray-500
+                hover:shadow-lg
+              "
+            />
+          </div>
+
+          <div className="animate-fadeInUp delay-300">
+            <label className="block text-sm font-medium text-gray-800 mb-2">
+              Modelo
+            </label>
+            <input
+              type="text"
+              name="modelo"
+              value={categoria.modelo || ""}
+              onChange={atualizarEstado}
+              placeholder="Digite o modelo"
+              className="
+                w-full
+                rounded-3xl
+                border border-pink-300
+                bg-white/60
+                backdrop-blur-sm
+                p-4
+                focus:ring-2 focus:ring-pink-400 focus:border-pink-400
+                outline-none
+                shadow-md
+                transition-all duration-300
+                placeholder-gray-500
+                hover:shadow-lg
+              "
+            />
+          </div>
+
+          <div className="animate-fadeInUp delay-400">
+            <label className="block text-sm font-medium text-gray-800 mb-2">
+              Ano
+            </label>
+            <input
+              type="text"
+              name="ano"
+              value={categoria.ano || ""}
+              onChange={atualizarEstado}
+              placeholder="Digite o ano"
+              className="
+                w-full
+                rounded-3xl
+                border border-pink-300
+                bg-white/60
+                backdrop-blur-sm
+                p-4
+                focus:ring-2 focus:ring-pink-400 focus:border-pink-400
+                outline-none
+                shadow-md
+                transition-all duration-300
+                placeholder-gray-500
+                hover:shadow-lg
+              "
+            />
+          </div>
+
+          <div className="animate-fadeInUp delay-500">
+            <label className="block text-sm font-medium text-gray-800 mb-2">
+              Cor
+            </label>
+            <input
+              type="text"
+              name="cor"
+              value={categoria.cor || ""}
+              onChange={atualizarEstado}
+              placeholder="Digite a cor"
+              className="
+                w-full
+                rounded-3xl
+                border border-pink-300
+                bg-white/60
+                backdrop-blur-sm
+                p-4
+                focus:ring-2 focus:ring-pink-400 focus:border-pink-400
+                outline-none
+                shadow-md
+                transition-all duration-300
+                placeholder-gray-500
+                hover:shadow-lg
+              "
+            />
+          </div>
+
+          <div className="animate-fadeInUp delay-600">
+            <label className="block text-sm font-medium text-gray-800 mb-2">
+              Placa
+            </label>
+            <input
+              type="text"
+              name="placa"
+              value={categoria.placa || ""}
+              onChange={atualizarEstado}
+              placeholder="Digite a placa"
+              className="
+                w-full
+                rounded-3xl
+                border border-pink-300
+                bg-white/60
+                backdrop-blur-sm
+                p-4
+                focus:ring-2 focus:ring-pink-400 focus:border-pink-400
+                outline-none
+                shadow-md
+                transition-all duration-300
+                placeholder-gray-500
+                hover:shadow-lg
+              "
+            />
+          </div>
         </div>
 
         <div className="flex justify-end gap-6 mt-12">
@@ -168,7 +292,7 @@ return (
               px-10 py-3
               rounded-full
               bg-white
-              text-gray-700
+              text-gray-800
               font-medium
               shadow-md
               hover:bg-gray-100
@@ -198,17 +322,14 @@ return (
               flex items-center justify-center gap-2
             "
           >
-            {isLoading ? (
-              <ClipLoader color="#ffffff" size={20} />
-            ) : (
-              id ? "Atualizar" : "Cadastrar"
-            )}
+            {isLoading ? <ClipLoader color="#ffffff" size={20} /> : id ? "Atualizar" : "Cadastrar"}
           </button>
         </div>
       </form>
     </div>
   </div>
 );
+
 
 
 }

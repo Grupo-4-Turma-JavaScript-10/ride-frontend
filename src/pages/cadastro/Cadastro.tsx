@@ -128,7 +128,7 @@ export default function Cadastro() {
       <div className="absolute w-150 h-150 bg-yellow-200/20 rounded-full blur-3xl -top-40 -left-40" />
       <div className="absolute w-150 h-150 bg-pink-200/20 rounded-full blur-3xl -bottom-40 -right-40" />
 
-      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white/85 backdrop-blur-md border border-white/60 shadow-lg p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl">
+      <div className="relative z-10 w-full max-w-sm rounded-2xl bg-white/85 backdrop-blur-md border border-white/60 shadow-lg p-8 transition-all duration-500 hover:shadow-xl">
 
         <h2 className="text-xl font-semibold text-gray-800 text-center mb-6 tracking-tight">
           Criar conta
@@ -168,7 +168,7 @@ export default function Cadastro() {
             onChange={atualizarEstado}
             placeholder="Nome completo"
             required
-            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md focus:-translate-y-0.5"
+            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md"
           />
 
           <input
@@ -178,7 +178,7 @@ export default function Cadastro() {
             onChange={atualizarEstado}
             placeholder="Email"
             required
-            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md focus:-translate-y-0.5"
+            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md"
           />
 
           <input
@@ -189,7 +189,7 @@ export default function Cadastro() {
             placeholder="Senha (mínimo 8 caracteres)"
             required
             minLength={8}
-            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md focus:-translate-y-0.5"
+            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md"
           />
 
           <input
@@ -199,7 +199,7 @@ export default function Cadastro() {
             placeholder="Confirmar senha"
             required
             minLength={8}
-            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md focus:-translate-y-0.5"
+            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md"
           />
 
           <select
@@ -207,7 +207,7 @@ export default function Cadastro() {
             value={usuario.sexo}
             onChange={atualizarEstado}
             required
-            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md focus:-translate-y-0.5"
+            className="px-4 py-3 rounded-lg bg-white/90 border border-stone-200 outline-none transition-all duration-300 focus:ring-2 focus:ring-stone-300 focus:border-stone-400 focus:shadow-md"
           >
             <option value="">Selecione o gênero</option>
             {GENEROS.map((genero) => (
@@ -218,7 +218,7 @@ export default function Cadastro() {
           <button
             type="submit"
             disabled={isLoading}
-            className="mt-2 py-3 rounded-lg font-medium text-gray-900 bg-linear-to-br from-yellow-200 via-pink-200 to-rose-200 shadow-md transition-all duration-300 hover:from-amber-300 hover:via-orange-200 hover:to-rose-300 hover:-translate-y-1 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-2 py-3 rounded-lg font-medium text-gray-900 bg-linear-to-br from-yellow-200 via-pink-200 to-rose-200 shadow-md transition-all duration-300 hover:from-amber-300 hover:via-orange-200 hover:to-rose-300 hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Cadastrando..." : "Cadastrar"}
           </button>

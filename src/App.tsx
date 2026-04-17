@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import Footer from "./components/footer/Footer";
-import Navbar from "./components/navbar/Navbar";
+import Footer from "./components/footer/footer";
+import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import Cadastro from "./pages/cadastro/Cadastro";
@@ -10,19 +10,20 @@ import PerfilPage from "./pages/perfil/PerfilPage";
 import Sobre from "./pages/sobre/Sobre";
 import ListaCategorias from "./components/categoria/listacategorias/ListaCategorias";
 import FormCategoria from "./components/categoria/formcategoria/FormCategoria";
-import DashboardMotorista from "./pages/home/homemotorista/DashboardMotorista";
-import DashboardPassageiro from "./pages/home/homepassageiro/DashboardPassageiro";
 import DeletarCategoria from "./components/categoria/deletarcategoria/DeletarCategoria";
 import Dashboard from "./pages/dashboard/Dashboard";
 import DeletarProduto from "./components/produto/deletarproduto/DeletarProduto";
 import FormProduto from "./components/produto/formproduto/FormProduto";
 import ListaProdutos from "./components/produto/listaprodutos/ListaProdutos";
+import Navbar from "./components/navbar/navbar";
+
 
 
 function App() {
   return (
     <>
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <ToastContainer />
           <Navbar />

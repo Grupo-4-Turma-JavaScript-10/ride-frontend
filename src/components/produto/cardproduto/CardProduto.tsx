@@ -72,7 +72,7 @@ function CardProduto({ produto }: CardProdutoProps) {
         </div>
       </div>
 
-      <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-6 border-b-2 border-custom-yellow/30">
+      <div className="bg-linear-to-br from-yellow-50 to-amber-50 p-6 border-b-2 border-custom-yellow/30">
         <div className="flex items-center justify-center gap-4">
           <div className="bg-white rounded-full p-4 shadow-md">
             <Clock size={32} className="text-yellow-600" />
@@ -91,7 +91,7 @@ function CardProduto({ produto }: CardProdutoProps) {
         <div className="flex items-start gap-4">
           <div className="flex flex-col items-center gap-2 mt-1">
             <MapPin size={20} className="text-yellow-600" fill="currentColor" />
-            <div className="h-12 w-0.5 bg-gradient-to-b from-yellow-600 to-red-600"></div>
+            <div className="h-12 w-0.5 bg-linear-to-b from-yellow-600 to-red-600"></div>
             <MapPin size={20} className="text-red-600" fill="currentColor" />
           </div>
           <div className="flex-1 space-y-3">
@@ -127,7 +127,7 @@ function CardProduto({ produto }: CardProdutoProps) {
 
       {produto.categoria && (
         <div className="px-6 pb-4">
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
+          <div className="bg-linear-to-r from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
             <p className="text-xs text-gray-600 font-medium mb-2">Veículo</p>
             <p className="text-gray-800 font-semibold">
               {`${produto.categoria.fabricante} ${produto.categoria.modelo}`}

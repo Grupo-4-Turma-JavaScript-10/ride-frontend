@@ -1,73 +1,106 @@
-# React + TypeScript + Vite
+# 🚗 Ride Frontend: Velo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> Aplicação web para gestão de caronas e transporte compartilhado.
 
-Currently, two official plugins are available:
+![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-CA4245?style=flat&logo=reactrouter&logoColor=white)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 📌 Descrição
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Aplicação web desenvolvida com **React** e **TypeScript**, projetada para facilitar a gestão de caronas e transporte compartilhado. Interface intuitiva e responsiva para encontrar, oferecer e gerenciar caronas de forma eficiente.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Tecnologias
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Tecnologia | Função |
+|---|---|
+| React 18+ | Biblioteca para construção de interfaces |
+| TypeScript | Tipagem estática |
+| Vite | Build tool e dev server |
+| React Router DOM | Navegação e roteamento |
+| Context API / Redux | Gerenciamento de estado global |
+| Axios | Cliente HTTP |
+| React Query | Cache e gerenciamento de requisições |
+| CSS Modules / Styled Components | Estilização componentizada |
+| ESLint + Prettier | Qualidade e formatação de código |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## ⚙️ Como rodar localmente
+
+```bash
+# Clone o repositório
+git clone https://github.com/lancellot/ride-frontend.git
+
+# Acesse a pasta e instale as dependências
+cd ride-frontend
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+> Aplicação disponível em: **http://localhost:5173**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🔐 Variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+VITE_API_URL=http://localhost:3000
+VITE_APP_NAME=Ride Frontend
 ```
+
+---
+
+## 🗺️ Rotas
+
+| Rota | Descrição |
+|---|---|
+| `/` | Página inicial com busca de caronas |
+| `/login` | Autenticação de usuários |
+| `/cadastro` | Registro de novos usuários |
+| `/perfil` | Gerenciamento de perfil |
+| `/minhas-caronas` | Histórico e caronas ativas |
+| `/oferecer-carona` | Formulário para criar nova carona |
+
+---
+
+## 💡 Diferenciais do projeto
+
+- ✅ Autenticação segura com JWT integrado ao backend
+- ✅ Arquitetura componentizada com React
+- ✅ Tipagem estática com TypeScript
+- ✅ Interface responsiva para desktop, tablet e mobile
+- ✅ Boas práticas com ESLint e Prettier
+
+---
+
+## 🌐 Deploy
+
+> https://ride-frontend-tan.vercel.app/
+
+---
+
+## 📷 Screenshots
+
+> <img width="1867" height="912" alt="Captura de tela 2026-04-15 155556" src="https://github.com/user-attachments/assets/e614c200-4a3f-4c2a-9580-a893a2b4c745" />
+
+
+---
+
+## 📈 Melhorias futuras
+
+- [ ] Documentação de componentes com Storybook
+- [ ] Testes unitários com Vitest
+- [ ] Paginação e filtros avançados nas buscas
+- [ ] PWA para uso mobile offline
+- [ ] Deploy automatizado com CI/CD

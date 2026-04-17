@@ -44,12 +44,7 @@ export default function DashboardUsuario() {
           <p className="text-gray-800 break-all">{usuario.usuario}</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <p className="text-sm text-gray-500 mb-2">Perfil</p>
-          <p className="text-gray-800">
-            {usuario.sexo || "Não informado"}
-          </p>
-        </div>
+
       </div>
 
       <div>

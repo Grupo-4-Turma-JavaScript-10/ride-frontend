@@ -12,6 +12,8 @@ export interface UsuarioLogin {
     senha: string;
     foto: string;
     token: string;
+    sexo?: string;
+    data?: string;
     produto?: Produto[];
 }
 
@@ -19,6 +21,7 @@ interface AuthContextProps {
     usuario: UsuarioLogin;
     handleLogout(): void;
     handleLogin(usuario: UsuarioLogin): Promise<void>;
+    atualizarUsuario(usuarioAtualizado: Partial<UsuarioLogin>): void;
     isLoading: boolean;
     isMotorista: boolean;
     isPassageiro: boolean;
@@ -31,6 +34,11 @@ interface AuthProvidersProps {
 
 export const AuthContext = createContext({} as AuthContextProps);
 
+const sanitizeTipoUsuario = (tipo: any): "MOTORISTA" | "PASSAGEIRO" | "" => {
+    if (tipo === "MOTORISTA" || tipo === "PASSAGEIRO") return tipo;
+    return "";
+};
+
 export function AuthProvider({ children }: AuthProvidersProps) {
     const navigate = useNavigate();
     
@@ -42,28 +50,22 @@ export function AuthProvider({ children }: AuthProvidersProps) {
         senha: "",
         foto: "",
         token: "",
+        sexo: "",
+        data: "",
         produto: []
     });
     
     const [isLoading, setIsLoading] = useState(false);
-    
-    const isMotorista = usuario.tipoUsuario === "MOTORISTA";
-    const isPassageiro = usuario.tipoUsuario === "PASSAGEIRO";
-    const isAuthenticated = usuario.token !== "";
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         const usuarioSalvo = localStorage.getItem('usuario');
-        
         if (token && usuarioSalvo) {
             try {
                 const usuarioData = JSON.parse(usuarioSalvo);
-                setUsuario({
-                    ...usuarioData,
-                    token: token,
-                    senha: ""
-                });
-            } catch (error) {
+                const usuarioComToken = { ...usuarioData, token, senha: "" };
+                setUsuario(usuarioComToken);
+            } catch {
                 localStorage.removeItem('token');
                 localStorage.removeItem('usuario');
             }
@@ -71,44 +73,84 @@ export function AuthProvider({ children }: AuthProvidersProps) {
     }, []);
 
     async function handleLogin(usuarioLogin: UsuarioLogin) {
-        if (!usuarioLogin.tipoUsuario) {
-            ToastAlerta('Selecione se você é motorista ou passageiro!', 'error');
-            return;
-        }
-        
         setIsLoading(true);
-        
         try {
-            await login(`/usuarios/logar`, usuarioLogin, (usuarioRetornado: UsuarioLogin) => {
-                setUsuario(usuarioRetornado);
+            await login("/usuarios/logar", usuarioLogin, (usuarioRetornado: UsuarioLogin) => {
+                const usuarioCompleto = {
+                    ...usuarioRetornado,
+                    tipoUsuario: sanitizeTipoUsuario(usuarioRetornado.tipoUsuario || usuarioLogin.tipoUsuario),
+                    senha: ""
+                };
                 
+                setUsuario(usuarioCompleto);
                 localStorage.setItem('token', usuarioRetornado.token);
                 localStorage.setItem('usuario', JSON.stringify({
                     id: usuarioRetornado.id,
                     nome: usuarioRetornado.nome,
                     usuario: usuarioRetornado.usuario,
-                    tipoUsuario: usuarioLogin.tipoUsuario,
+                    tipoUsuario: sanitizeTipoUsuario(usuarioRetornado.tipoUsuario || usuarioLogin.tipoUsuario),
                     foto: usuarioRetornado.foto,
+                    sexo: usuarioRetornado.sexo,
+                    data: usuarioRetornado.data,
                     produto: usuarioRetornado.produto
                 }));
-            });
-            
-            ToastAlerta('Login realizado com sucesso!', 'success');
-            
-            setTimeout(() => {
-                if (usuarioLogin.tipoUsuario === "MOTORISTA") {
-                    navigate("/home");
-                } else {
-                    navigate("/home");
+                
+                if (!usuarioRetornado.tipoUsuario) {
+                    fetch(
+                        `${import.meta.env.VITE_API_URL}/usuarios/${usuarioRetornado.id}`,
+                        { headers: { Authorization: usuarioRetornado.token } }
+                    )
+                    .then(res => res.json())
+                    .then(perfil => {
+                        const usuarioAtualizado = {
+                            ...usuarioCompleto,
+                            tipoUsuario: sanitizeTipoUsuario(perfil.tipoUsuario || usuarioLogin.tipoUsuario)
+                        };
+                        setUsuario(usuarioAtualizado);
+                        localStorage.setItem('usuario', JSON.stringify({
+                            id: perfil.id,
+                            nome: perfil.nome,
+                            usuario: perfil.usuario,
+                            tipoUsuario: sanitizeTipoUsuario(perfil.tipoUsuario || usuarioLogin.tipoUsuario),
+                            foto: perfil.foto,
+                            sexo: perfil.sexo,
+                            data: perfil.data,
+                            produto: perfil.produto
+                        }));
+                    })
+                    .catch(erro => console.error('Erro ao buscar perfil:', erro));
                 }
-            }, 100);
-            
-        } catch (error: any) {
+                
+                ToastAlerta('Login realizado com sucesso!', 'success');
+                navigate("/home");
+            });
+        } catch {
             ToastAlerta('Os dados do usuário estão inconsistentes!', 'error');
-            throw error;
+            throw new Error('Erro no login');
         } finally {
             setIsLoading(false);
         }
+    }
+
+    function atualizarUsuario(usuarioAtualizado: Partial<UsuarioLogin>) {
+        const novoUsuario = { ...usuario, ...usuarioAtualizado };
+        
+        if (novoUsuario.tipoUsuario) {
+            novoUsuario.tipoUsuario = sanitizeTipoUsuario(novoUsuario.tipoUsuario);
+        }
+        
+        setUsuario(novoUsuario);
+        
+        localStorage.setItem('usuario', JSON.stringify({
+            id: novoUsuario.id,
+            nome: novoUsuario.nome,
+            usuario: novoUsuario.usuario,
+            tipoUsuario: novoUsuario.tipoUsuario || "",
+            foto: novoUsuario.foto,
+            sexo: novoUsuario.sexo,
+            data: novoUsuario.data,
+            produto: novoUsuario.produto
+        }));
     }
 
     function handleLogout() {
@@ -119,12 +161,13 @@ export function AuthProvider({ children }: AuthProvidersProps) {
             tipoUsuario: "",
             senha: "",
             foto: "",
-            token: ""
+            token: "",
+            sexo: "",
+            data: "",
+            produto: []
         });
-        
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
-        
         navigate("/login");
     }
 
@@ -134,10 +177,11 @@ export function AuthProvider({ children }: AuthProvidersProps) {
                 usuario,
                 handleLogin,
                 handleLogout,
+                atualizarUsuario,
                 isLoading,
-                isMotorista,
-                isPassageiro,
-                isAuthenticated
+                isMotorista: usuario.tipoUsuario === "MOTORISTA",
+                isPassageiro: usuario.tipoUsuario === "PASSAGEIRO",
+                isAuthenticated: usuario.token !== ""
             }}
         >
             {children}

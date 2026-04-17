@@ -38,11 +38,10 @@ function DeletarProduto() {
     usuario: {} as any,
   });
 
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [deletando, setDeletando] = useState(false);
   const [confirmado, setConfirmado] = useState(false);
 
-  // Verifica login ao montar
   useEffect(() => {
     if (!token) {
       ToastAlerta("Você precisa estar logado!", "error");

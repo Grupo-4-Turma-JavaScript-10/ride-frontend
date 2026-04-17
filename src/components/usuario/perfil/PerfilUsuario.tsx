@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { UserIcon, CameraIcon, X, CheckIcon } from '@phosphor-icons/react';
-import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import type Usuario from '../../../models/Usuario';
 import { ToastAlerta } from '../../../util/ToastAlerta';
+import { AuthContext } from '../../../contexts/AuthContext';
+import { atualizar, authHeader } from '../../../services/Service';
 
 interface PerfilUsuarioProps {
     usuario: Usuario;
-    onUpdate: (usuarioAtualizado: Usuario) => void;
+    onUpdate?: (usuarioAtualizado: Usuario) => void;
 }
-
 
 const GENEROS = [
     "Feminino",
@@ -24,49 +24,49 @@ const GENEROS = [
 ];
 
 function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
+    const { usuario: usuarioContext, atualizarUsuario } = useContext(AuthContext);
+
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showFotoModal, setShowFotoModal] = useState(false);
     const [formData, setFormData] = useState<Omit<Usuario, 'id' | 'produto'>>({
         nome: usuario.nome,
         usuario: usuario.usuario,
         senha: '',
         foto: usuario.foto,
-        sexo: usuario.sexo,
+        sexo: usuario.sexo || '',
         data: usuario.data,
         tipoUsuario: usuario.tipoUsuario,
     });
     const [previewFoto, setPreviewFoto] = useState<string>(usuario.foto);
     const [confirmarSenha, setConfirmarSenha] = useState('');
 
+    // ✅ Só sincroniza quando NÃO está editando, evitando reset durante edição
     useEffect(() => {
-        setFormData({
-            nome: usuario.nome,
-            usuario: usuario.usuario,
-            senha: '',
-            foto: usuario.foto,
-            sexo: usuario.sexo,
-            data: usuario.data,
-            tipoUsuario: usuario.tipoUsuario,
-        });
-        setPreviewFoto(usuario.foto);
-    }, [usuario]);
+        if (!isEditing) {
+            setFormData({
+                nome: usuario.nome,
+                usuario: usuario.usuario,
+                senha: '',
+                foto: usuario.foto,
+                sexo: usuario.sexo || '',
+                data: usuario.data,
+                tipoUsuario: usuario.tipoUsuario,
+            });
+            setPreviewFoto(usuario.foto);
+        }
+    }, [usuario.id]); // ✅ Depende só do ID, não do objeto inteiro
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setFormData((prev) => ({
-            ...prev,
-            foto: value,
-        }));
+        setFormData((prev) => ({ ...prev, foto: value }));
         setPreviewFoto(value);
     };
 
@@ -75,22 +75,18 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
             ToastAlerta('O nome é obrigatório', 'erro');
             return false;
         }
-
         if (!formData.usuario.trim()) {
             ToastAlerta('O nome de usuário é obrigatório', 'erro');
             return false;
         }
-
         if (formData.senha && formData.senha !== confirmarSenha) {
             ToastAlerta('As senhas não coincidem', 'erro');
             return false;
         }
-
         if (formData.senha && formData.senha.length < 6) {
             ToastAlerta('A senha deve ter no mínimo 6 caracteres', 'erro');
             return false;
         }
-
         return true;
     };
 
@@ -99,16 +95,31 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
 
         setLoading(true);
         try {
-
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-
             const usuarioAtualizado: Usuario = {
                 ...usuario,
                 ...formData,
                 senha: formData.senha || usuario.senha,
             };
 
-            onUpdate(usuarioAtualizado);
+            // ✅ Uma única chamada ao atualizar
+            await atualizar(
+                `/usuarios/atualizar`,
+                usuarioAtualizado,
+                (dados: Usuario) => {
+                    // ✅ Atualiza o contexto global
+                    atualizarUsuario({
+                        nome: dados.nome,
+                        usuario: dados.usuario,
+                        foto: dados.foto,
+                    });
+
+                    // ✅ Notifica o pai se necessário (opcional)
+                    onUpdate?.(dados);
+                },
+                authHeader(usuarioContext.token)
+            );
+
+            // ✅ Toast só em um lugar
             ToastAlerta('Perfil atualizado com sucesso!', 'sucesso');
             setIsEditing(false);
             setFormData((prev) => ({ ...prev, senha: '' }));
@@ -127,7 +138,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
             usuario: usuario.usuario,
             senha: '',
             foto: usuario.foto,
-            sexo: usuario.sexo,
+            sexo: usuario.sexo || '',
             data: usuario.data,
             tipoUsuario: usuario.tipoUsuario,
         });
@@ -170,71 +181,12 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                         )}
 
                         {isEditing && (
-                            <Popup
-                                trigger={
-                                    <button className="absolute bottom-2 right-2 bg-black hover:bg-gray-800 text-white p-3 rounded-full shadow-lg transition-colors">
-                                        <CameraIcon size={20} />
-                                    </button>
-                                }
-                                modal
-                                nested
+                            <button
+                                onClick={() => setShowFotoModal(true)}
+                                className="absolute bottom-2 right-2 bg-black hover:bg-gray-800 text-white p-3 rounded-full shadow-lg transition-colors"
                             >
-                                {((close: () => void) => (
-                                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-xl font-bold text-gray-800">
-                                                Alterar Foto
-                                            </h3>
-                                            <button
-                                                onClick={close}
-                                                className="text-gray-500 hover:text-gray-700"
-                                            >
-                                                <X size={24} />
-                                            </button>
-                                        </div>
-
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                    URL da Foto
-                                                </label>
-                                                <input
-                                                    type="url"
-                                                    value={formData.foto}
-                                                    onChange={handleFotoChange}
-                                                    placeholder="https://exemplo.com/foto.jpg"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                />
-                                            </div>
-
-                                            {previewFoto && (
-                                                <div className="mt-4">
-                                                    <p className="text-sm font-medium text-gray-700 mb-2">
-                                                        Preview:
-                                                    </p>
-                                                    <img
-                                                        src={previewFoto}
-                                                        alt="Preview"
-                                                        className="w-full aspect-square object-cover rounded-lg"
-                                                        onError={(e) => {
-                                                            (e.target as HTMLImageElement).src =
-                                                                'https://via.placeholder.com/300x300?text=URL+Inválida';
-                                                        }}
-                                                    />
-                                                </div>
-                                            )}
-
-                                            <button
-                                                onClick={close}
-                                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
-                                            >
-                                                Confirmar
-                                            </button>
-                                        </div>
-                                    </div>
-                                )) as unknown as React.ReactNode}
-                            </Popup>
-
+                                <CameraIcon size={20} />
+                            </button>
                         )}
                     </div>
 
@@ -296,6 +248,7 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                                     : 'bg-gray-100 cursor-not-allowed'
                                     }`}
                             >
+                                <option value="">Selecione...</option>
                                 {GENEROS.map((genero) => (
                                     <option key={genero} value={genero}>{genero}</option>
                                 ))}
@@ -383,6 +336,65 @@ function PerfilUsuario({ usuario, onUpdate }: PerfilUsuarioProps) {
                     )}
                 </div>
             </div>
+
+            {showFotoModal && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                    onClick={() => setShowFotoModal(false)}
+                >
+                    <div
+                        className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">Alterar Foto</h3>
+                            <button
+                                onClick={() => setShowFotoModal(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    URL da Foto
+                                </label>
+                                <input
+                                    type="url"
+                                    value={formData.foto}
+                                    onChange={handleFotoChange}
+                                    placeholder="https://exemplo.com/foto.jpg"
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+
+                            {previewFoto && (
+                                <div className="mt-4">
+                                    <p className="text-sm font-medium text-gray-700 mb-2">Preview:</p>
+                                    <img
+                                        src={previewFoto}
+                                        alt="Preview"
+                                        className="w-full aspect-square object-cover rounded-lg"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).src =
+                                                'https://via.placeholder.com/300x300?text=URL+Inválida';
+                                        }}
+                                    />
+                                </div>
+                            )}
+
+                            <button
+                                onClick={() => setShowFotoModal(false)}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors"
+                            >
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

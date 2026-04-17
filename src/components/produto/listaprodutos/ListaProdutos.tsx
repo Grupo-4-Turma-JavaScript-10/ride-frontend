@@ -9,7 +9,7 @@ import { ToastAlerta } from "../../../util/ToastAlerta";
 
 function ListaProdutos() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
