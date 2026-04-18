@@ -215,7 +215,7 @@ function Home() {
       <section className="font-roboto flex flex-col items-center sm:-translate-y-10 -translate-y-3 px-5">
         <div className="flex gap-5 sm:flex-row flex-col items-start justify-around w-[90%] max-w-7xl bg-linear-to-br from-gray-50 to-white rounded-2xl p-6 transform-translate shadow-2xl border border-gray-100">
           <div className="flex gap-4 items-center sm:max-w-72 hover:scale-105 transition-transform">
-            <div className="bg-custom-yellow/20 rounded-full p-3">
+            <div className="bg-custom-yellow/20 rounded-full p-3 h-18 aspect-square flex items-center justify-center" >
               <img src={money} alt="Dinheiro" className="h-12 aspect-square" />
             </div>
             <div>
@@ -225,7 +225,7 @@ function Home() {
           </div>
 
           <div className="flex items-center gap-4 sm:max-w-72 hover:scale-105 transition-transform">
-            <div className="bg-custom-pink/20 rounded-full p-3">
+            <div className="bg-custom-pink/20 rounded-full p-3 h-18 aspect-square flex items-center justify-center">
               <img src={driverPink} alt="Motorista" className="h-12 aspect-square" />
             </div>
             <div>
@@ -235,7 +235,7 @@ function Home() {
           </div>
 
           <div className="flex items-center gap-4 sm:max-w-72 hover:scale-105 transition-transform">
-            <div className="bg-purple-100 rounded-full p-3">
+            <div className="bg-purple-100 rounded-full p-3 h-18 aspect-square flex items-center justify-center">
               <img src={people} alt="People" className="h-12 aspect-square" />
             </div>
             <div>
