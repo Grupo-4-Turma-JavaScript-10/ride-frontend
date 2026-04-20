@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useContext, useEffect, useState, useRef, type ChangeEvent, type FormEvent } from "react";
 import { atualizar, buscar, cadastrar } from "../../../services/Service";
 import { ToastAlerta } from "../../../util/ToastAlerta";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
@@ -6,6 +6,50 @@ import type Produto from "../../../models/Produto";
 import type Categoria from "../../../models/Categoria";
 import { ClipLoader } from "react-spinners";
 import { AuthContext } from "../../../contexts/AuthContext";
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
+import L from 'leaflet';
+
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
+
+interface Coords { lat: number; lng: number; }
+
+const ORS_KEY = import.meta.env.VITE_ORS_API_KEY;
+
+async function geocodificar(local: string): Promise<Coords | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(local)}&format=json&limit=1`,
+      { headers: { 'Accept-Language': 'pt-BR' } }
+    );
+    const data = await res.json();
+    if (data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  } catch {}
+  return null;
+}
+
+async function buscarRotaReal(origem: Coords, destino: Coords): Promise<[number, number][]> {
+  try {
+    const res = await fetch(
+      `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${ORS_KEY}&start=${origem.lng},${origem.lat}&end=${destino.lng},${destino.lat}`
+    );
+    const data = await res.json();
+    const coords = data.features[0].geometry.coordinates as [number, number][];
+    return coords.map(([lng, lat]) => [lat, lng]);
+  } catch {
+    return [[origem.lat, origem.lng], [destino.lat, destino.lng]];
+  }
+}
+
+function AtualizarMapa({ coords }: { coords: [number, number] }) {
+  const map = useMap();
+  useEffect(() => { map.setView(coords, map.getZoom()); }, [coords]);
+  return null;
+}
 
 function FormProduto() {
   const navigate = useNavigate();
@@ -33,6 +77,12 @@ function FormProduto() {
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const [coordOrigem, setCoordOrigem] = useState<Coords | null>(null);
+  const [coordDestino, setCoordDestino] = useState<Coords | null>(null);
+  const [rotaCoords, setRotaCoords] = useState<[number, number][]>([]);
+  const [carregandoMapa, setCarregandoMapa] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const header = {
     headers: {
       Authorization: token.startsWith("Bearer") ? token : `Bearer ${token}`,
@@ -40,55 +90,55 @@ function FormProduto() {
   };
 
   useEffect(() => {
-    if (!token) {
-      ToastAlerta("Você precisa estar logado!", "error");
-      navigate("/login");
-    }
+    if (!token) { ToastAlerta("Você precisa estar logado!", "error"); navigate("/login"); }
   }, [token, navigate]);
 
   useEffect(() => {
     if (!token) return;
-
     buscar("/categorias", setCategorias, header).catch((error: any) => {
       if (error.toString().includes("401") || error.response?.status === 401) {
-        ToastAlerta("Sessão expirada. Faça login novamente.", "error");
-        handleLogout();
-      } else {
-        ToastAlerta("Erro ao carregar categorias.", "error");
-      }
+        ToastAlerta("Sessão expirada. Faça login novamente.", "error"); handleLogout();
+      } else { ToastAlerta("Erro ao carregar categorias.", "error"); }
     });
 
     if (id) {
       buscar(`/produtos/${id}`, setProduto, header).catch((error: any) => {
         if (error.toString().includes("401") || error.response?.status === 401) {
-          ToastAlerta("Sessão expirada. Faça login novamente.", "error");
-          handleLogout();
-        } else {
-          ToastAlerta("Erro ao carregar produto.", "error");
-        }
+          ToastAlerta("Sessão expirada. Faça login novamente.", "error"); handleLogout();
+        } else { ToastAlerta("Erro ao carregar produto.", "error"); }
       });
     } else if (location.state) {
-      // Preenche os campos com os dados vindos da Home
       const { origem, destino, data } = location.state as any;
-      
-      setProduto(prev => ({
-        ...prev,
-        origem: origem || "",
-        destino: destino || "",
-        data: data || ""
-      }));
-
-      // Feedback visual para o usuário
-      if (origem || destino || data) {
-        ToastAlerta("Dados preenchidos da busca!", "info");
-      }
+      setProduto(prev => ({ ...prev, origem: origem || "", destino: destino || "", data: data || "" }));
+      if (origem || destino || data) ToastAlerta("Dados preenchidos da busca!", "info");
     }
-  }, [token, id, location.state, handleLogout]);
+  }, [token, id, location.state, handleLogout, header]);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!produto.origem && !produto.destino) return;
+
+    debounceRef.current = setTimeout(async () => {
+      setCarregandoMapa(true);
+      const [origem, destino] = await Promise.all([
+        produto.origem.length > 3 ? geocodificar(produto.origem) : Promise.resolve(coordOrigem),
+        produto.destino.length > 3 ? geocodificar(produto.destino) : Promise.resolve(coordDestino),
+      ]);
+      if (origem) setCoordOrigem(origem);
+      if (destino) setCoordDestino(destino);
+      if (origem && destino) {
+        const rota = await buscarRotaReal(origem, destino);
+        setRotaCoords(rota);
+      } else {
+        setRotaCoords([]);
+      }
+      setCarregandoMapa(false);
+    }, 1000); 
+  }, [produto.origem, produto.destino, coordOrigem, coordDestino]);
 
   function atualizarEstado(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value, type } = e.target;
     const novoValor = type === "number" ? Number(value) : value;
-
     setProduto((prev) => {
       const updated = { ...prev, [name]: novoValor };
       if (updated.distanciaKm > 0 && updated.velocidadeMediaKmh > 0) {
@@ -100,21 +150,17 @@ function FormProduto() {
     });
   }
 
-  function retornar() {
-    navigate("/produtos");
-  }
+  function retornar() { navigate("/produtos"); }
 
   async function salvar(e: FormEvent) {
     e.preventDefault();
     setIsLoading(true);
-
     const produtoEnvio = {
       ...produto,
       data: new Date(produto.data).toISOString(),
       categoria: { id: produto.categoria.id },
       usuario: { id: usuario.id },
     };
-
     try {
       if (id) {
         await atualizar("/produtos", produtoEnvio, setProduto, header);
@@ -126,31 +172,29 @@ function FormProduto() {
       navigate("/produtos");
     } catch (error: any) {
       if (error.toString().includes("401") || error.response?.status === 401) {
-        ToastAlerta("Sessão expirada. Faça login novamente.", "error");
-        handleLogout();
-      } else {
-        ToastAlerta("Erro ao salvar carona.", "erro");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+        ToastAlerta("Sessão expirada. Faça login novamente.", "error"); handleLogout();
+      } else { ToastAlerta("Erro ao salvar carona.", "erro"); }
+    } finally { setIsLoading(false); }
   }
+
+  const centerCoords: [number, number] =
+    coordOrigem && coordDestino
+      ? [(coordOrigem.lat + coordDestino.lat) / 2, (coordOrigem.lng + coordDestino.lng) / 2]
+      : coordOrigem
+      ? [coordOrigem.lat, coordOrigem.lng]
+      : [-15.788, -47.879];
 
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 via-white to-purple-50 py-8 px-4">
       <div className="max-w-5xl mx-auto">
 
         <div className="mb-8">
-          <button
-            onClick={retornar}
-            className="flex items-center gap-2 text-gray-600 hover:text-pink-600 transition-colors mb-4 group"
-          >
+          <button onClick={retornar} className="flex items-center gap-2 text-gray-600 hover:text-pink-600 transition-colors mb-4 group">
             <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             <span className="font-medium">Voltar</span>
           </button>
-          
           <h1 className="text-4xl font-bold bg-linear-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
             {id ? "Editar Carona" : "Nova Carona"}
           </h1>
@@ -161,76 +205,38 @@ function FormProduto() {
 
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           <form onSubmit={salvar} className="p-8">
-            
+
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
                 <div className="w-1 h-6 bg-linear-to-b from-pink-500 to-purple-500 rounded-full"></div>
                 Informações Básicas
               </h2>
-              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Título da Carona
-                  </label>
-                  <input
-                    type="text"
-                    name="titulo"
-                    value={produto.titulo}
-                    onChange={atualizarEstado}
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Título da Carona</label>
+                  <input type="text" name="titulo" value={produto.titulo} onChange={atualizarEstado}
                     placeholder="Ex: Centro para Universidade"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                    required
-                  />
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all" required />
                 </div>
-
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Descrição
-                  </label>
-                  <textarea
-                    name="descricao"
-                    value={produto.descricao}
-                    onChange={atualizarEstado}
-                    placeholder="Descreva detalhes sobre a carona..."
-                    rows={3}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all resize-none"
-                    required
-                  />
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Descrição</label>
+                  <textarea name="descricao" value={produto.descricao} onChange={atualizarEstado}
+                    placeholder="Descreva detalhes sobre a carona..." rows={3}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all resize-none" required />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Valor (R$)
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Valor (R$)</label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">R$</span>
-                    <input
-                      type="number"
-                      name="preco"
-                      value={produto.preco === 0 ? '' : produto.preco}
-                      onChange={atualizarEstado}
-                      placeholder="0,00"
-                      step="0.01"
-                      min="0"
-                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                      required
-                    />
+                    <input type="number" name="preco" value={produto.preco === 0 ? '' : produto.preco} onChange={atualizarEstado}
+                      placeholder="0,00" step="0.01" min="0"
+                      className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all" required />
                   </div>
                 </div>
-
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Data e Horário
-                  </label>
-                  <input
-                    type="datetime-local"
-                    name="data"
-                    value={produto.data}
-                    onChange={atualizarEstado}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                    required
-                  />
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Data e Horário</label>
+                  <input type="datetime-local" name="data" value={produto.data} onChange={atualizarEstado}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all" required />
                 </div>
               </div>
             </div>
@@ -240,75 +246,72 @@ function FormProduto() {
                 <div className="w-1 h-6 bg-linear-to-b from-pink-500 to-purple-500 rounded-full"></div>
                 Informações da Rota
               </h2>
-              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Origem
-                  </label>
-                  <input
-                    type="text"
-                    name="origem"
-                    value={produto.origem}
-                    onChange={atualizarEstado}
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Origem</label>
+                  <input type="text" name="origem" value={produto.origem} onChange={atualizarEstado}
                     placeholder="Endereço de partida"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                    required
-                  />
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all" required />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Destino
-                  </label>
-                  <input
-                    type="text"
-                    name="destino"
-                    value={produto.destino}
-                    onChange={atualizarEstado}
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Destino</label>
+                  <input type="text" name="destino" value={produto.destino} onChange={atualizarEstado}
                     placeholder="Endereço de chegada"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                    required
-                  />
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all" required />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Distância (km)
-                  </label>
-                  <input
-                    type="number"
-                    name="distanciaKm"
-                    value={produto.distanciaKm === 0 ? '' : produto.distanciaKm}
-                    onChange={atualizarEstado}
-                    placeholder="0"
-                    step="0.1"
-                    min="0"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                    required
-                  />
-                </div>
+                {(produto.origem.length > 3 || produto.destino.length > 3) && (
+                  <div className="md:col-span-2">
+                    <div className="rounded-xl overflow-hidden border border-gray-200 relative" style={{ height: 280 }}>
+                      {carregandoMapa && (
+                        <div className="absolute inset-0 z-1000 bg-white/80 flex flex-col items-center justify-center gap-2">
+                          <div className="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin" />
+                          <span className="text-xs text-gray-500">Buscando rota...</span>
+                        </div>
+                      )}
+                      <MapContainer center={centerCoords} zoom={6} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
+                        <AtualizarMapa coords={centerCoords} />
+                        <TileLayer
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        />
+                        {coordOrigem && (
+                          <Marker position={[coordOrigem.lat, coordOrigem.lng]}>
+                            <Popup>Origem: {produto.origem}</Popup>
+                          </Marker>
+                        )}
+                        {coordDestino && (
+                          <Marker position={[coordDestino.lat, coordDestino.lng]}>
+                            <Popup>Destino: {produto.destino}</Popup>
+                          </Marker>
+                        )}
+                        {rotaCoords.length > 0 && (
+                          <Polyline positions={rotaCoords} color="#ec4899" weight={4} />
+                        )}
+                      </MapContainer>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">
+                      O mapa atualiza automaticamente conforme você digita
+                    </p>
+                  </div>
+                )}
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Velocidade Média (km/h)
-                  </label>
-                  <input
-                    type="number"
-                    name="velocidadeMediaKmh"
-                    value={produto.velocidadeMediaKmh === 0 ? '' : produto.velocidadeMediaKmh}
-                    onChange={atualizarEstado}
-                    placeholder="0"
-                    step="1"
-                    min="0"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all"
-                    required
-                  />
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Distância (km)</label>
+                  <input type="number" name="distanciaKm" value={produto.distanciaKm === 0 ? '' : produto.distanciaKm}
+                    onChange={atualizarEstado} placeholder="0" step="0.1" min="0"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all" required />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Velocidade Média (km/h)</label>
+                  <input type="number" name="velocidadeMediaKmh" value={produto.velocidadeMediaKmh === 0 ? '' : produto.velocidadeMediaKmh}
+                    onChange={atualizarEstado} placeholder="0" step="1" min="0"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all" required />
                 </div>
 
                 <div className="md:col-span-2">
                   <div className="bg-linear-to-r from-pink-500 to-purple-500 rounded-2xl p-6 shadow-lg">
-                    <label className="block text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                    <label className="block text-sm font-semibold text-white mb-3 items-center gap-2">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -317,16 +320,12 @@ function FormProduto() {
                     <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl px-6 py-4 border border-white border-opacity-30">
                       <div className="text-5xl font-bold text-black text-center">
                         {produto.tempoMinutos > 0 ? (
-                          <>
-                            {produto.tempoMinutos} <span className="text-2xl font-medium">min</span>
-                          </>
+                          <>{produto.tempoMinutos} <span className="text-2xl font-medium">min</span></>
                         ) : (
                           <span className="text-2xl text-black text-opacity-70">-- min</span>
                         )}
                       </div>
-                      <p className="text-center text-black text-opacity-90 text-sm mt-2">
-                        Calculado automaticamente
-                      </p>
+                      <p className="text-center text-black text-opacity-90 text-sm mt-2">Calculado automaticamente</p>
                     </div>
                   </div>
                 </div>
@@ -338,23 +337,12 @@ function FormProduto() {
                 <div className="w-1 h-6 bg-linear-to-b from-pink-500 to-purple-500 rounded-full"></div>
                 Veículo e Preferências
               </h2>
-              
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Tipo de Veículo
-                  </label>
-                  <select
-                    value={produto.categoria?.id || ""}
-                    onChange={(e) =>
-                      setProduto({
-                        ...produto,
-                        categoria: { id: Number(e.target.value) } as Categoria,
-                      })
-                    }
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all appearance-none cursor-pointer"
-                    required
-                  >
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Tipo de Veículo</label>
+                  <select value={produto.categoria?.id || ""}
+                    onChange={(e) => setProduto({ ...produto, categoria: { id: Number(e.target.value) } as Categoria })}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all appearance-none cursor-pointer" required>
                     <option value="">Selecione o veículo</option>
                     {categorias.map((cat) => (
                       <option key={cat.id} value={cat.id}>
@@ -363,20 +351,11 @@ function FormProduto() {
                     ))}
                   </select>
                 </div>
-
                 <div className="bg-pink-50 rounded-xl p-5 border border-pink-100">
                   <label className="flex items-start gap-3 cursor-pointer group">
-                    <input
-                      type="checkbox"
-                      checked={produto.motoristaMesmoGenero}
-                      onChange={(e) =>
-                        setProduto({
-                          ...produto,
-                          motoristaMesmoGenero: e.target.checked,
-                        })
-                      }
-                      className="mt-1 w-5 h-5 rounded border-gray-300 text-pink-500 focus:ring-pink-400 focus:ring-offset-0 cursor-pointer"
-                    />
+                    <input type="checkbox" checked={produto.motoristaMesmoGenero}
+                      onChange={(e) => setProduto({ ...produto, motoristaMesmoGenero: e.target.checked })}
+                      className="mt-1 w-5 h-5 rounded border-gray-300 text-pink-500 focus:ring-pink-400 focus:ring-offset-0 cursor-pointer" />
                     <div>
                       <span className="text-gray-800 font-semibold block group-hover:text-pink-600 transition-colors">
                         Prefiro motorista do mesmo gênero
@@ -387,39 +366,23 @@ function FormProduto() {
                     </div>
                   </label>
                 </div>
-
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Observações Adicionais
-                  </label>
-                  <textarea
-                    name="observacoes"
-                    placeholder="Informações extras sobre a carona (opcional)..."
-                    rows={3}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all resize-none"
-                  />
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Observações Adicionais</label>
+                  <textarea name="observacoes" placeholder="Informações extras sobre a carona (opcional)..." rows={3}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all resize-none" />
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-4 pt-6 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={retornar}
-                className="px-8 py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
-              >
+              <button type="button" onClick={retornar}
+                className="px-8 py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
                 Cancelar
               </button>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="px-10 py-3 rounded-xl bg-linear-to-r from-pink-500 to-purple-500 text-white font-semibold shadow-lg hover:shadow-xl hover:from-pink-600 hover:to-purple-600 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
-              >
+              <button type="submit" disabled={isLoading}
+                className="px-10 py-3 rounded-xl bg-linear-to-r from-pink-500 to-purple-500 text-white font-semibold shadow-lg hover:shadow-xl hover:from-pink-600 hover:to-purple-600 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2">
                 {isLoading ? (
-                  <>
-                    <ClipLoader color="#fff" size={20} />
-                    <span>Salvando...</span>
-                  </>
+                  <><ClipLoader color="#fff" size={20} /><span>Salvando...</span></>
                 ) : (
                   <span>{id ? "Atualizar Carona" : "Cadastrar Carona"}</span>
                 )}
