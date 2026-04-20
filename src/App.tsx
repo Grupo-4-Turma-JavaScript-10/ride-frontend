@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Footer from "./components/footer/footer";
 import ScrollToTop from "./components/ScrollToTop";
@@ -17,41 +17,48 @@ import FormProduto from "./components/produto/formproduto/FormProduto";
 import ListaProdutos from "./components/produto/listaprodutos/ListaProdutos";
 import Navbar from "./components/navbar/navbar";
 
+function AppContent() {
+  const { pathname } = useLocation();
 
-
-function App() {
   return (
     <>
-      <BrowserRouter>
-        <ScrollToTop />
-        <AuthProvider>
-          <ToastContainer />
-          <Navbar />
+      <ScrollToTop />
+      <ToastContainer />
+      <Navbar />
 
-          <main className="min-h-screen flex flex-col">
-            <Routes>
-              <Route path='/' element={<Home />} />
-              <Route path='/home' element={<Home />} />
-              <Route path='/login' element={<Login />} />
-              <Route path='/cadastro' element={<Cadastro />} />
-              <Route path="/perfil" element={<PerfilPage />} />
-              <Route path="/sobre" element={<Sobre />} />
-              <Route path="/categorias" element={<ListaCategorias />} />
-              <Route path="/cadastrarcategoria" element={<FormCategoria/>} />
-              <Route path="/editarcategoria/:id" element={<FormCategoria/>} />
-              <Route path="/deletarcategoria/:id" element={<DeletarCategoria/>} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/produtos" element={<ListaProdutos/>} />
-              <Route path="/cadastrarproduto" element={<FormProduto/>} />
-              <Route path="/editarproduto/:id" element={<FormProduto/>} />
-              <Route path="/deletarproduto/:id" element={<DeletarProduto/>} />
-            </Routes>
-          </main>
+      <main className="min-h-screen flex flex-col">
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/home' element={<Home />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/cadastro' element={<Cadastro />} />
+          <Route path="/perfil" element={<PerfilPage />} />
+          <Route path="/sobre" element={<Sobre />} />
+          <Route path="/categorias" element={<ListaCategorias />} />
+          <Route path="/cadastrarcategoria" element={<FormCategoria/>} />
+          <Route path="/editarcategoria/:id" element={<FormCategoria/>} />
+          <Route path="/deletarcategoria/:id" element={<DeletarCategoria/>} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/produtos" element={<ListaProdutos/>} />
+          <Route path="/cadastrarproduto" element={<FormProduto/>} />
+          <Route path="/editarproduto/:id" element={<FormProduto/>} />
+          <Route path="/deletarproduto/:id" element={<DeletarProduto/>} />
+        </Routes>
+      </main>
 
-          <Footer />
-        </AuthProvider>
-      </BrowserRouter>
+      <Footer isHome={pathname === '/' || pathname === '/home'} />
     </>
   );
 }
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
 export default App;

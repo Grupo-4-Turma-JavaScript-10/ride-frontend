@@ -4,9 +4,9 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 import Logo from "../../assets/Logo.png";
 import Vertex from "../../assets/vertex.png";
 
-const Footer = () => {
+const Footer = ({ isHome = false }) => {
   return (
-    <footer className="bg-linear-to-br from-custom-pink to-pink-700 text-white">
+    <footer className={`text-white ${isHome ? 'bg-linear-to-br from-black via-pink-400 to-pink-700' : 'bg-linear-to-br from-custom-pink to-pink-700'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
           
@@ -89,18 +89,18 @@ const Footer = () => {
                 href="mailto:contato@velo.com"
                 className="flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base text-white/90 hover:text-white transition-colors"
               >
-                <Mail className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <Mail className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 <span>contato@velo.com</span>
               </a>
               <a 
                 href="tel:+5551999999999"
                 className="flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base text-white/90 hover:text-white transition-colors"
               >
-                <Phone className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <Phone className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 <span>(51) 9999-9999</span>
               </a>
               <p className="flex items-center justify-center sm:justify-start gap-2 text-sm sm:text-base text-white/90">
-                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
                 <span>Porto Alegre, RS</span>
               </p>
             </div>
