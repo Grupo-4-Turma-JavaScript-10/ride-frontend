@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import 'leaflet/dist/leaflet.css';
 
 @theme {
   --color-custom-yellow: #FFF7AD;
@@ -40,7 +41,7 @@
   }
 
   .input-pastel:focus {
-    border-color: #ff69b4; /* rosa para focar */
+    border-color: #ff69b4;
     box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.3);
   }
 
