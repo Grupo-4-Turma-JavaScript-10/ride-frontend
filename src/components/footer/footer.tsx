@@ -6,7 +6,7 @@ import Vertex from "../../assets/vertex.png";
 
 const Footer = ({ isHome = false }) => {
   return (
-    <footer className={`text-white ${isHome ? 'bg-linear-to-br from-black via-pink-400 to-pink-700' : 'bg-linear-to-br from-custom-pink to-pink-700'}`}>
+    <footer className={`text-white ${isHome ? 'bg-linear-to-b from-gray-900 via-pink-400 to-pink-700' : 'bg-linear-to-br from-custom-pink to-pink-700'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
           

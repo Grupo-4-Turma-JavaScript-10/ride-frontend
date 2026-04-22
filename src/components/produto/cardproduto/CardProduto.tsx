@@ -5,14 +5,8 @@ import { Pencil, Trash2, MapPin, Clock, Gauge, Calendar, Users } from "lucide-re
 import { AuthContext } from "../../../contexts/AuthContext";
 import { ToastAlerta } from "../../../util/ToastAlerta";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
-import L from 'leaflet';
+import "../../../util/leafletConfig";
 
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-});
 
 interface CardProdutoProps {
   produto: Produto;
@@ -63,7 +57,7 @@ function CardProduto({ produto }: CardProdutoProps) {
   const [coordOrigem, setCoordOrigem] = useState<Coords | null>(null);
   const [coordDestino, setCoordDestino] = useState<Coords | null>(null);
   const [rotaCoords, setRotaCoords] = useState<[number, number][]>([]);
-  const [mapaCarregado, setMapaCarregado] = useState(true);
+  const [mapaCarregado] = useState(true);
   const [carregandoRota, setCarregandoRota] = useState(false);
 
   useEffect(() => {
