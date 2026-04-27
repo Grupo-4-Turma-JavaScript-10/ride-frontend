@@ -1,85 +1,18 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import type Produto from "../../../models/Produto";
 import { useNavigate } from "react-router-dom";
 import { Pencil, Trash2, MapPin, Clock, Gauge, Calendar, Users } from "lucide-react";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { ToastAlerta } from "../../../util/ToastAlerta";
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
-import "../../../util/leafletConfig";
-
 
 interface CardProdutoProps {
   produto: Produto;
-}
-
-interface Coords {
-  lat: number;
-  lng: number;
-}
-
-const ORS_KEY = import.meta.env.VITE_ORS_API_KEY;
-
-async function geocodificar(local: string): Promise<Coords | null> {
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(local)}&format=json&limit=1`,
-      { headers: { 'Accept-Language': 'pt-BR' } }
-    );
-    const data = await res.json();
-    if (data.length > 0) {
-      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-    }
-  } catch {}
-  return null;
-}
-
-async function buscarRotaReal(origem: Coords, destino: Coords): Promise<[number, number][]> {
-  try {
-    const res = await fetch(
-      `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${ORS_KEY}&start=${origem.lng},${origem.lat}&end=${destino.lng},${destino.lat}`
-    );
-    const data = await res.json();
-    const coords = data.features[0].geometry.coordinates as [number, number][];
-    return coords.map(([lng, lat]) => [lat, lng]);
-  } catch {
-    return [
-      [origem.lat, origem.lng],
-      [destino.lat, destino.lng],
-    ];
-  }
 }
 
 function CardProduto({ produto }: CardProdutoProps) {
   const navigate = useNavigate();
   const { usuario } = useContext(AuthContext);
   const token = usuario?.token || localStorage.getItem("token") || "";
-
-  const [coordOrigem, setCoordOrigem] = useState<Coords | null>(null);
-  const [coordDestino, setCoordDestino] = useState<Coords | null>(null);
-  const [rotaCoords, setRotaCoords] = useState<[number, number][]>([]);
-  const [mapaCarregado] = useState(true);
-  const [carregandoRota, setCarregandoRota] = useState(false);
-
-  useEffect(() => {
-    if (!mapaCarregado) return;
-
-    setCarregandoRota(true);
-
-    Promise.all([
-      geocodificar(produto.origem),
-      geocodificar(produto.destino),
-    ]).then(async ([origem, destino]) => {
-      setCoordOrigem(origem);
-      setCoordDestino(destino);
-
-      if (origem && destino) {
-        const rota = await buscarRotaReal(origem, destino);
-        setRotaCoords(rota);
-      }
-
-      setCarregandoRota(false);
-    });
-  }, [mapaCarregado, produto.origem, produto.destino]);
 
   const handleEdit = (e: React.MouseEvent) => {
     if (!token) {
@@ -100,11 +33,6 @@ function CardProduto({ produto }: CardProdutoProps) {
     }
     navigate(`/deletarproduto/${produto.id}`);
   };
-
-  const centerCoords: [number, number] =
-    coordOrigem && coordDestino
-      ? [(coordOrigem.lat + coordDestino.lat) / 2, (coordOrigem.lng + coordDestino.lng) / 2]
-      : [-15.788, -47.879];
 
   return (
     <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
@@ -193,46 +121,6 @@ function CardProduto({ produto }: CardProdutoProps) {
             <p className="text-xs text-gray-600 font-medium">Velocidade Média</p>
           </div>
           <p className="text-2xl font-bold text-gray-800">{produto.velocidadeMediaKmh} <span className="text-sm text-gray-500">km/h</span></p>
-        </div>
-      </div>
-
-      <div className="px-6 pb-4">
-        <p className="text-xs text-gray-600 font-medium mb-2">Rota no Mapa</p>
-        <div className="rounded-xl overflow-hidden border border-gray-200 relative" style={{ height: 220 }}>
-          {carregandoRota && (
-            <div className="absolute inset-0 z-1000 bg-white/80 flex flex-col items-center justify-center gap-2 rounded-xl">
-              <div className="w-6 h-6 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
-              <span className="text-xs text-gray-500">Calculando rota...</span>
-            </div>
-          )}
-          <MapContainer
-            center={centerCoords}
-            zoom={6}
-            style={{ height: '100%', width: '100%' }}
-            scrollWheelZoom={false}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            />
-            {coordOrigem && (
-              <Marker position={[coordOrigem.lat, coordOrigem.lng]}>
-                <Popup>Origem: {produto.origem}</Popup>
-              </Marker>
-            )}
-            {coordDestino && (
-              <Marker position={[coordDestino.lat, coordDestino.lng]}>
-                <Popup>Destino: {produto.destino}</Popup>
-              </Marker>
-            )}
-            {rotaCoords.length > 0 && (
-              <Polyline
-                positions={rotaCoords}
-                color="#d97706"
-                weight={4}
-              />
-            )}
-          </MapContainer>
         </div>
       </div>
 
